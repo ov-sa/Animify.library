@@ -93,8 +93,8 @@ function createCoreUI()
     coreUI.viewerUI.__endY = coreUI.viewerUI.__endY + coreUI.viewerUI.height + coreUI.viewerUI.borderPadding
     beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
     local deckpane_startX, deckpane_startY = 0, (coreUI.viewerUI.banner.marginY*2) + coreUI.viewerUI.marginY + coreUI.viewerUI.banner.height
-    local createdDeckpane = beautify.deckpane.create(0, deckpane_startY, coreUI.viewerUI.width, coreUI.viewerUI.height - deckpane_startY, coreUI.viewerUI.createdParent, false)
     local deck_height = 165
+    local createdDeckpane = beautify.deckpane.create(0, deckpane_startY, coreUI.viewerUI.width, coreUI.viewerUI.height - deckpane_startY, coreUI.viewerUI.createdParent, false)
     local createdDecks = {
         {
             title = "VIEW FRAMES",
@@ -108,8 +108,15 @@ function createCoreUI()
     for i, j in ipairs(createdDecks) do
         local createdDeck = beautify.deck.create(j.title, deck_height, createdDeckpane, false)
         beautify.deck.setMaximized(createdDeck, false)
-        if j.deckType == "frame_creation" then
-
+        if j.deckType == "frame_viewer" then
+            local createdGridlist = beautify.gridlist.create(0, 0, coreUI.viewerUI.width - 10, deck_height, createdDeck, false)
+            beautify.gridlist.addColumn(createdGridlist, "FRAME ID", 250)        
+            for x = 1, 500, 1 do
+                local rowIndex = beautify.gridlist.addRow(createdGridlist)
+                beautify.gridlist.setRowData(createdGridlist, rowIndex, 1, "FRAME #"..tostring(beautify.gridlist.countRows(createdGridlist)))
+            end
+            beautify.gridlist.setSelection(createdGridlist, 1)
+            beautify.setUIVisible(createdGridlist, true)
         end
         j.createdElement = createdDeck
         beautify.setUIVisible(createdDeck, true)

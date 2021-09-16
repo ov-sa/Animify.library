@@ -16,6 +16,6 @@
 addEventHandler("onClientResourceStart", resourceRoot, function()
 
     createCoreUI()
-    showCursor(true)
+    --showCursor(true)
 
 end)

@@ -20,6 +20,9 @@ availableTemplates["beautify_deck"] = {
         titleBar = {
             color = {20, 20, 20, 255},
             fontColor = {175, 175, 175, 255},
+            divider = {
+                color = {0, 0, 0, 255},
+            },
             toggleButton = {
                 color = {175, 175, 175, 255}
             }

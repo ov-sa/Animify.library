@@ -15,45 +15,13 @@
 
 availableTemplates["beautify_scrollbar"] = {
 
-    ["ov-dark-theme"] = {},
-
-    ["dark-blue-theme"] = {
+    ["ov-dark-theme"] = {
         track = {
-            color = {5, 5, 5, 253}
+            color = {20, 20, 20, 255}
         },
         thumb = {
             color = {175, 175, 175, 255},
-            shadowColor = {5, 5, 5, 253}
-        }
-    },
-
-    ["dark-red-theme"] = {
-        track = {
-            color = {5, 5, 5, 253}
-        },
-        thumb = {
-            color = {175, 175, 175, 255},
-            shadowColor = {5, 5, 5, 253}
-        }
-    },
-
-    ["dark-green-theme"] = {
-        track = {
-            color = {5, 5, 5, 253}
-        },
-        thumb = {
-            color = {175, 175, 175, 255},
-            shadowColor = {5, 5, 5, 253}
-        }
-    },
-
-    ["dark-yellow-theme"] = {
-        track = {
-            color = {5, 5, 5, 253}
-        },
-        thumb = {
-            color = {175, 175, 175, 255},
-            shadowColor = {5, 5, 5, 253}
+            shadowColor = {20, 20, 20, 255}
         }
     }
 
