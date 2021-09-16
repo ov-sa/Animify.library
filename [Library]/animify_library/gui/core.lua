@@ -57,9 +57,6 @@ local coreUI = {
     }
 
 }
-for i, j in pairs(availableTemplates) do
-    beautify.setUITemplate(i, j["ov-dark-theme"])
-end
 coreUI.viewerUI.paddingX = coreUI.optionsUI.paddingX + coreUI.viewerUI.paddingX
 coreUI.viewerUI.height = (coreUI.viewerUI.banner.marginY*2) + coreUI.viewerUI.banner.height + coreUI.viewerUI.height
 coreUI.viewerUI.banner.font = coreUI.optionsUI.banner.font 

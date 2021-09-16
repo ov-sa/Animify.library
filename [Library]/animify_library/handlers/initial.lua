@@ -15,6 +15,7 @@
 
 addEventHandler("onClientResourceStart", resourceRoot, function()
 
+    setUITheme("ov-dark-theme")
     createCoreUI()
     --showCursor(true)
 

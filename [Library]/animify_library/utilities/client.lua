@@ -17,3 +17,19 @@
 resource = getResourceRootElement(getThisResource())
 CLIENT_MTA_RESOLUTION = {GuiElement.getScreenSize()}
 loadstring(exports.beautify_library:fetchImports())()
+
+
+-----------------------------------
+--[[ Function: Sets UI's Theme ]]--
+-----------------------------------
+
+function setUITheme(theme)
+
+    if not theme then return false end
+
+    for i, j in pairs(availableTemplates) do
+        beautify.setUITemplate(i, j["ov-dark-theme"])
+    end
+    return true
+
+end
