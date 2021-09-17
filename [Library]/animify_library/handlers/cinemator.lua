@@ -16,7 +16,7 @@
 local cinemationData = {
     pedData = {
         createdPed = false,
-        createdPedDisc = false,
+        spawnDisc = {},
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
@@ -45,11 +45,11 @@ function initCinemator()
     initModels()
     cinemationData.pedData.createdPed = createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
 
-    cinemationData.pedData.createdPedDisc = createObject(Animify_Models["spawnDisc"].modelID, 0, 0, 0)
+    cinemationData.pedData.spawnDisc.object = createObject(Animify_Models["spawnDisc"].modelID, 0, 0, 0)
     discShader = dxCreateShader(Animify_Shaders["Axisifier"])
-    engineApplyShaderToWorldTexture(discShader, "ring", cinemationData.pedData.createdPedDisc)
+    engineApplyShaderToWorldTexture(discShader, "ring", cinemationData.pedData.spawnDisc.object)
     dxSetShaderValue(discShader, "axisColor", 5/255, 5/255, 5/255, 1)
-    setElementCollidableWith(cinemationData.pedData.createdPedDisc, cinemationData.pedData.createdPed, false)
+    setElementCollidableWith(cinemationData.pedData.spawnDisc.object, cinemationData.pedData.createdPed, false)
 
     for i, j in pairs(cinemationData.axisRings) do
         j.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
@@ -107,7 +107,7 @@ beautify.render.create(function()
     end
 
     local pedPosition = {getElementPosition(cinemationData.pedData.createdPed)}
-    setElementPosition(cinemationData.pedData.createdPedDisc, pedPosition[1], pedPosition[2], pedPosition[3] - 1)
+    setElementPosition(cinemationData.pedData.spawnDisc.object, pedPosition[1], pedPosition[2], pedPosition[3] - 1)
 
     if getKeyState("lctrl") then
         pedRotation = (pedRotation + 1)
@@ -116,7 +116,7 @@ beautify.render.create(function()
     end
     pedRotation = pedRotation%360
     setElementRotation(cinemationData.pedData.createdPed, 0, 0, pedRotation)
-    setElementRotation(cinemationData.pedData.createdPedDisc, 0, 0, pedRotation)
+    setElementRotation(cinemationData.pedData.spawnDisc.object, 0, 0, pedRotation)
 
     local focussedAxis = false
     if isCursorShowing() then
