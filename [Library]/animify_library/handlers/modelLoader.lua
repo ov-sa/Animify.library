@@ -14,7 +14,6 @@
 -------------------
 
 Animify_Models = {
-    spawnDisc = {dffPath = "files/assets/models/disc/disc.dff", txdPath = "files/assets/models/disc/disc.txd", colPath = "files/assets/models/disc/disc.col"},
     axisRing = {dffPath = "files/assets/models/ring/ring.dff", txdPath = "files/assets/models/ring/ring.txd", colPath = "files/assets/models/ring/ring.col"}
 }
 

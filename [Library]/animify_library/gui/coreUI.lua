@@ -13,7 +13,7 @@
 --[[ Variables ]]--
 -------------------
 
-local coreUI = {
+coreUI = {
 
     optionsUI = {
         createdParent = false,
@@ -69,6 +69,28 @@ local coreUI = {
             {
                 title = "VIEW ANIMATIONS",
                 deckType = "view_animations"
+            }
+        }
+    },
+
+    viewportUI = {
+        sliders = {
+            width = 200, height = 24,
+            marginY = 5, paddingY = 5,
+            {
+                title = "PED ROTATION",
+                sliderType = "ped_rotation",
+                defaultPercent = 100
+            },
+            {
+                title = "CAMERA ROTATION",
+                sliderType = "camera_rotation",
+                defaultPercent = 100
+            },
+            {
+                title = "CAMERA FOV",
+                sliderType = "camera_fov",
+                defaultPercent = 100
             }
         }
     }
@@ -139,5 +161,13 @@ function createCoreUI()
         dxDrawImage(0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.bgPath, 0, 0, 0, -1, false)
         dxDrawText(coreUI.viewerUI.banner.text, 0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.marginY + coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.fontColor, 1, coreUI.viewerUI.banner.font, "center", "center", true, false, false, false)
     end, coreUI.viewerUI.createdParent)
+
+    -->> View Port UI <<--
+    for i, j in ipairs(coreUI.viewportUI.sliders) do
+        j.createdElement = beautify.slider.create(CLIENT_MTA_RESOLUTION[1] - coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.marginY + ((coreUI.viewportUI.sliders.height + coreUI.viewportUI.sliders.paddingY)*(i - 1)), coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height, "horizontal", nil, false)
+        beautify.slider.setText(j.createdElement, j.title)
+        beautify.slider.setPercent(j.createdElement, j.defaultPercent)
+        beautify.setUIVisible(j.createdElement, true)
+    end
 
 end

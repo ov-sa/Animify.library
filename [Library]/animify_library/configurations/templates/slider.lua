@@ -15,49 +15,14 @@
 
 availableTemplates["beautify_slider"] = {
 
-    ["ov-dark-theme"] = {},
-
-    ["dark-blue-theme"] = {
-        fontColor = {200, 200, 200, 255},
+    ["ov-dark-theme"] = {
+        fontColor = {255, 255, 255, 255},
         track = {
-            progressedColor = {125, 125, 255, 255},
-            unprogressedColor = {15, 15, 15, 255}
+            progressedColor = {175, 175, 175, 255},
+            unprogressedColor = {0, 0, 0, 255}
         },
         thumb = {
-            color = {125, 125, 255, 255}
-        }
-    },
-
-    ["dark-red-theme"] = {
-        fontColor = {200, 200, 200, 255},
-        track = {
-            progressedColor = {255, 125, 125, 255},
-            unprogressedColor = {15, 15, 15, 255}
-        },
-        thumb = {
-            color = {255, 125, 125, 255}
-        }
-    },
-
-    ["dark-green-theme"] = {
-        fontColor = {200, 200, 200, 255},
-        track = {
-            progressedColor = {125, 255, 125, 255},
-            unprogressedColor = {15, 15, 15, 255}
-        },
-        thumb = {
-            color = {125, 255, 125, 255}
-        }
-    },
-
-    ["dark-yellow-theme"] = {
-        fontColor = {200, 200, 200, 255},
-        track = {
-            progressedColor = {255, 255, 125, 255},
-            unprogressedColor = {15, 15, 15, 255}
-        },
-        thumb = {
-            color = {255, 255, 125, 255}
+            color = {175, 175, 175, 255},
         }
     }
 

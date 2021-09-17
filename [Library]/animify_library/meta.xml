@@ -40,9 +40,6 @@
     <file src="files/assets/images/banners/ov.png"/>
 
     <!-- Files: Assets: Models -->
-    <file src="files/assets/models/disc/disc.dff"/>
-    <file src="files/assets/models/disc/disc.txd"/>
-    <file src="files/assets/models/disc/disc.col"/>
     <file src="files/assets/models/ring/ring.dff"/>
     <file src="files/assets/models/ring/ring.txd"/>
     <file src="files/assets/models/ring/ring.col"/>

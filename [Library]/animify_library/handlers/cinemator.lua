@@ -16,11 +16,11 @@
 local cinemationData = {
     pedData = {
         createdPed = false,
-        spawnDisc = {},
+        --spawnDisc = {},
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
-        cameraMatrix = {1480.912963867188, -1466.779541015625, 40.06010055541992, 1481.8369140625, -1466.725463867188, 40.23865585327148, 0, 90}
+        cameraMatrix = {1480.912963867188, -1466.779541015625, 40.06010055541992, 1481.8369140625, -1466.725463867188, 40.23865585327148, 0, 80}
     },
     axisRings = {
         x = {
@@ -44,12 +44,15 @@ function initCinemator()
 
     initModels()
     cinemationData.pedData.createdPed = createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
-
-    cinemationData.pedData.spawnDisc.object = createObject(Animify_Models["spawnDisc"].modelID, 0, 0, 0)
-    discShader = dxCreateShader(Animify_Shaders["Axisifier"])
-    engineApplyShaderToWorldTexture(discShader, "ring", cinemationData.pedData.spawnDisc.object)
-    dxSetShaderValue(discShader, "axisColor", 5/255, 5/255, 5/255, 1)
-    setElementCollidableWith(cinemationData.pedData.spawnDisc.object, cinemationData.pedData.createdPed, false)
+    for i = 0, 17 do
+        removePedClothes(cinemationData.pedData.createdPed, i)
+    end
+    --cinemationData.pedData.spawnDisc.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
+    --setObjectScale(cinemationData.pedData.spawnDisc.object, 4.25)
+    --discShader = dxCreateShader(Animify_Shaders["Axisifier"])
+    --engineApplyShaderToWorldTexture(discShader, "ring", cinemationData.pedData.spawnDisc.object)
+    --dxSetShaderValue(discShader, "axisColor", 5/255, 5/255, 5/255, 1)
+    --setElementCollidableWith(cinemationData.pedData.spawnDisc.object, cinemationData.pedData.createdPed, false)
 
     for i, j in pairs(cinemationData.axisRings) do
         j.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
@@ -57,7 +60,6 @@ function initCinemator()
         j.shader = dxCreateShader(Animify_Shaders["Axisifier"])
         engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
         dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
-        
     end
     for i, j in pairs(cinemationData.axisRings) do
         for k, v in pairs(cinemationData.axisRings) do
@@ -66,8 +68,6 @@ function initCinemator()
             end
         end
     end
-
-    setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
 
 end
 
@@ -102,21 +102,23 @@ beautify.render.create(function()
             else
                 dxDrawImage(x - (size*0.5), y - (size*0.5), size, size, circleTexture, 0, 0, 0, tocolor(255, 255, 255, 10), false)
             end
-            --dxDrawRectangle(x - (size*0.5), y - (size*0.5), size, size, tocolor(0, 0, 0, 255), false)
         end
     end
 
-    local pedPosition = {getElementPosition(cinemationData.pedData.createdPed)}
-    setElementPosition(cinemationData.pedData.spawnDisc.object, pedPosition[1], pedPosition[2], pedPosition[3] - 1)
-
-    if getKeyState("lctrl") then
-        pedRotation = (pedRotation + 1)
-    elseif getKeyState("rctrl") then
-        pedRotation = (pedRotation - 1)
+    for i, j in ipairs(coreUI.viewportUI.sliders) do
+        local _, sliderPercent = beautify.slider.getPercent(j.createdElement)
+        if sliderPercent then
+            sliderPercent = sliderPercent/100
+            if j.sliderType == "ped_rotation" then
+                setElementRotation(cinemationData.pedData.createdPed, 0, 0, sliderPercent*360)
+            elseif j.sliderType == "camera_fov" then
+                cinemationData.pedData.cameraMatrix[8] = 40 + (sliderPercent*40)
+            end
+        end
     end
-    pedRotation = pedRotation%360
-    setElementRotation(cinemationData.pedData.createdPed, 0, 0, pedRotation)
-    setElementRotation(cinemationData.pedData.spawnDisc.object, 0, 0, pedRotation)
+    setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
+    --local pedPosition = {getElementPosition(cinemationData.pedData.createdPed)}
+    --setElementPosition(cinemationData.pedData.spawnDisc.object, pedPosition[1], pedPosition[2], pedPosition[3] - 1)
 
     local focussedAxis = false
     if isCursorShowing() then
