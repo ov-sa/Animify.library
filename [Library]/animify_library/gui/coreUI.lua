@@ -169,5 +169,8 @@ function createCoreUI()
         beautify.slider.setPercent(j.createdElement, j.defaultPercent)
         beautify.setUIVisible(j.createdElement, true)
     end
+    showCursor(true)
+
+    return true
 
 end

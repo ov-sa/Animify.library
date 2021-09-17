@@ -16,6 +16,7 @@
 local cinemationData = {
     pedData = {
         createdPed = false,
+        --spawnDisc = {},
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
@@ -35,13 +36,45 @@ local cinemationData = {
 }
 
 
--------------------------------------
---[[ Function: Renders Cinemator ]]--
--------------------------------------
+-----------------------------------------
+--[[ Function: Initializes Cinemator ]]--
+-----------------------------------------
+
+function initCinemator()
+
+    initModels()
+    cinemationData.pedData.createdPed = createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
+    for i = 0, 17 do
+        removePedClothes(cinemationData.pedData.createdPed, i)
+    end
+    --cinemationData.pedData.spawnDisc.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
+    --setObjectScale(cinemationData.pedData.spawnDisc.object, 4.25)
+    --discShader = dxCreateShader(Animify_Shaders["Axisifier"])
+    --engineApplyShaderToWorldTexture(discShader, "ring", cinemationData.pedData.spawnDisc.object)
+    --dxSetShaderValue(discShader, "axisColor", 5/255, 5/255, 5/255, 1)
+    --setElementCollidableWith(cinemationData.pedData.spawnDisc.object, cinemationData.pedData.createdPed, false)
+
+    for i, j in pairs(cinemationData.axisRings) do
+        j.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
+        setElementCollidableWith(j.object, cinemationData.pedData.createdPed, false)
+        j.shader = dxCreateShader(Animify_Shaders["Axisifier"])
+        engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
+        dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
+    end
+    for i, j in pairs(cinemationData.axisRings) do
+        for k, v in pairs(cinemationData.axisRings) do
+            if j.object ~= v.object then
+                setElementCollidableWith(j.object, v.object, false)
+            end
+        end
+    end
+    return true
+
+end
 
 local circleTexture = dxCreateTexture(":beautify_library/files/assets/images/canvas/circle.rw", "argb", true, "clamp")
 
-local function renderCinemator()
+beautify.render.create(function()
 
     if not cinemationData.pedData.createdPed then return false end
 
@@ -80,6 +113,8 @@ local function renderCinemator()
         end
     end
     setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
+    --local pedPosition = {getElementPosition(cinemationData.pedData.createdPed)}
+    --setElementPosition(cinemationData.pedData.spawnDisc.object, pedPosition[1], pedPosition[2], pedPosition[3] - 1)
 
     local focussedAxis = false
     if isCursorShowing() then
@@ -93,36 +128,4 @@ local function renderCinemator()
         dxSetShaderValue(j.shader, "axisAlpha", ((j.object == focussedAxis) and 1) or 0.05)
     end
 
-end
-
-
------------------------------------------
---[[ Function: Initializes Cinemator ]]--
------------------------------------------
-
-function initCinemator()
-
-    initModels()
-    cinemationData.pedData.createdPed = createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
-    for i = 0, 17 do
-        removePedClothes(cinemationData.pedData.createdPed, i)
-    end
-
-    for i, j in pairs(cinemationData.axisRings) do
-        j.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
-        setElementCollidableWith(j.object, cinemationData.pedData.createdPed, false)
-        j.shader = dxCreateShader(Animify_Shaders["Axisifier"])
-        engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
-        dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
-    end
-    for i, j in pairs(cinemationData.axisRings) do
-        for k, v in pairs(cinemationData.axisRings) do
-            if j.object ~= v.object then
-                setElementCollidableWith(j.object, v.object, false)
-            end
-        end
-    end
-    beautify.render.create(renderCinemator)
-    return true
-
-end
+end)
