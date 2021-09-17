@@ -13,10 +13,11 @@
 --[[ Variables ]]--
 -------------------
 
+local prevLMBClickState, prevRMBClickState = false, false
 local cinemationData = {
     pedData = {
         createdPed = false,
-        selectedBone = false,
+        boneData = false,
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
@@ -46,11 +47,38 @@ local cinemationData = {
 --[[ Function: Renders Cinemator ]]--
 -------------------------------------
 
+local boneRotCache = false
 local function renderCinemator()
+
+    local isLCTRLOnHold = false
+    local isLMBClicked, isRMBClicked = false, false
+    if not GuiElement.isMTAWindowActive() then
+        isLCTRLOnHold = getKeyState("lctrl")
+        if not prevLMBClickState then
+            if getKeyState("mouse1") then
+                isLMBClicked = true
+                prevLMBClickState = true
+            end
+        else
+            if not getKeyState("mouse1") then
+                prevLMBClickState = false
+            end
+        end
+        if not prevRMBClickState then
+            if getKeyState("mouse2") then
+                isRMBClicked = true
+                prevRMBClickState = true
+            end
+        else
+            if not getKeyState("mouse2") then
+                prevRMBClickState = false
+            end
+        end
+    end
 
     local _, _, pedRotation = getElementRotation(cinemationData.pedData.createdPed)
     for i, j in pairs(availablePedBones) do
-        local isBoneSelected = (cinemationData.pedData.selectedBone == i)
+        local isBoneSelected = cinemationData.pedData.boneData and (cinemationData.pedData.boneData.boneID == i)
         local bone_posVector = Vector3(getPedBonePosition(cinemationData.pedData.createdPed, i))
         if isBoneSelected then
             setElementPosition(cinemationData.axisRings.x.object, bone_posVector)
@@ -62,24 +90,71 @@ local function renderCinemator()
         end
         local x, y = getScreenFromWorldPosition(bone_posVector)
         if x and y then
-            dxDrawImage(x - (cinemationData.boneIndicator.size*0.5), y - (cinemationData.boneIndicator.size*0.5), cinemationData.boneIndicator.size, cinemationData.boneIndicator.size, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
+            local indicatorSize = cinemationData.boneIndicator.size
+            local indicatorX, indicatorY = x - (indicatorSize*0.5), y - (indicatorSize*0.5)
+            if isRMBClicked then
+                boneRotCache = false
+                cinemationData.pedData.boneData = false
+            else
+                if not isBoneSelected then
+                    if isLMBClicked and isMouseOnPosition(indicatorX, indicatorY, indicatorSize, indicatorSize) then
+                        boneRotCache = false
+                        cinemationData.pedData.boneData = {
+                            boneID = i,
+                            axisID = false
+                        }
+                    end
+                end
+            end
+            dxDrawImage(indicatorX, indicatorY, indicatorSize, indicatorSize, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
         end
     end
 
     local focussedAxis = false
-    if isCursorShowing() and cinemationData.pedData.selectedBone and not cinemationData.pedData.selectedBone.selectedAxis then
-        local cursorX, cursorY = getCursorPosition()
-        local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX*CLIENT_MTA_RESOLUTION[1], cursorY*CLIENT_MTA_RESOLUTION[2], 0)), Vector3(getWorldFromScreenPosition(cursorX*CLIENT_MTA_RESOLUTION[1], cursorY*CLIENT_MTA_RESOLUTION[2], 5)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
-        if sightData[1] and sightData[5] then
-            focussedAxis = sightData[5]
+    if cinemationData.pedData.boneData then
+        if not cinemationData.pedData.boneData.axisID or not isLCTRLOnHold then
+            local cursorX, cursorY = getAbsoluteCursorPosition()
+            local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), Vector3(getWorldFromScreenPosition(cursorX, cursorY, 5)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
+            if sightData[1] and sightData[5] then
+                focussedAxis = sightData[5]
+            end
+        else
+            if isLCTRLOnHold then
+                --local yaw, pitch, roll = getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)
+                if not boneRotCache then
+                    boneRotCache = {getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
+                end
+                if cinemationData.pedData.boneData.axisID == "x" then
+                    if getKeyState("arrow_l") then
+                        boneRotCache[1] = boneRotCache[1] - 1
+                    elseif getKeyState("arrow_r") then
+                        boneRotCache[1] = boneRotCache[1] + 1
+                    end
+                elseif cinemationData.pedData.boneData.axisID == "y" then
+                    if getKeyState("arrow_l") then
+                        boneRotCache[2] = boneRotCache[2] - 1
+                    elseif getKeyState("arrow_r") then
+                        boneRotCache[2] = boneRotCache[2] + 1
+                    end
+                elseif cinemationData.pedData.boneData.axisID == "z" then
+                    if getKeyState("arrow_l") then
+                        boneRotCache[3] = boneRotCache[3] - 1
+                    elseif getKeyState("arrow_r") then
+                        boneRotCache[3] = boneRotCache[3] + 1
+                    end
+                end
+            end
         end
     end
     for i, j in pairs(cinemationData.axisRings) do
-        dxSetShaderValue(j.shader, "axisAlpha", ((j.object == focussedAxis) and 1) or 0.05)
+        if (focussedAxis == j.object) and (cinemationData.pedData.boneData.axisID ~= focussedAxis) then
+            if isLMBClicked then
+                cinemationData.pedData.boneData.axisID = i
+            end
+        end
+        dxSetShaderValue(j.shader, "axisAlpha", (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
     end
 
-    showChat(false)
-    setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
     for i, j in ipairs(coreUI.viewportUI.sliders) do
         local _, sliderPercent = beautify.slider.getPercent(j.createdElement)
         if sliderPercent then
@@ -91,8 +166,17 @@ local function renderCinemator()
             end
         end
     end
+    showChat(false)
+    setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
 
 end
+addEventHandler("onClientPedsProcessed", getRootElement(), function()
+    if boneRotCache then
+        setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, unpack(boneRotCache))
+        updateElementRpHAnim(cinemationData.pedData.createdPed)
+    end
+end)
+
 
 
 -----------------------------------------
@@ -114,7 +198,7 @@ function initCinemator()
         engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
         dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
         for k, v in pairs(cinemationData.axisRings) do
-            if j.object ~= v.object then
+            if v.object and (j.object ~= v.object) then
                 setElementCollidableWith(j.object, v.object, false)
             end
         end

@@ -18,6 +18,34 @@ CLIENT_MTA_RESOLUTION = {GuiElement.getScreenSize()}
 loadstring(exports.beautify_library:fetchImports())()
 
 
+--------------------------------------------------------
+--[[ Function: Retrieves Cursor's Absolute Position ]]--
+--------------------------------------------------------
+
+function getAbsoluteCursorPosition()
+
+    if not isCursorShowing() then return false end
+
+    local cursorX, cursorY = getCursorPosition()
+    return cursorX*CLIENT_MTA_RESOLUTION[1], cursorY*CLIENT_MTA_RESOLUTION[2]
+
+end
+
+
+---------------------------------------------
+--[[ Function: Verifies Mouse's Position ]]--
+---------------------------------------------
+
+function isMouseOnPosition(x, y, width, height)
+
+    local cursorX, cursorY = getAbsoluteCursorPosition()
+    if not cursorX or not cursorY then return false end
+
+    return (cursorX >= x) and (cursorX <= (x + width)) and (cursorY >= y) and (cursorY <= (y + height))
+
+end
+
+
 -----------------------------------------
 --[[ Function: Retrieves File's Data ]]--
 -----------------------------------------
