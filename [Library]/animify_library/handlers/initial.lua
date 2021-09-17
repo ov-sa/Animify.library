@@ -16,8 +16,8 @@
 addEventHandler("onClientResourceStart", resourceRoot, function()
 
     setUITheme("ov-dark-theme")
-    createCoreUI()
     initCinemator()
+    createCoreUI()
     showChat(false)
     --showCursor(true)
 

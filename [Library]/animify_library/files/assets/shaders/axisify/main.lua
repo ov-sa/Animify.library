@@ -31,7 +31,7 @@ for i, j in ipairs(imports) do
     end
 end
 
-AVAILABLE_SHADERS[shaderReference] = [[
+Animify_Shaders[shaderReference] = [[
 /*---------------
 -->> Imports <<--
 -----------------*/

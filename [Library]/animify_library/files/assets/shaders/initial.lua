@@ -13,4 +13,4 @@
 --[[ Variables ]]--
 -------------------
 
-AVAILABLE_SHADERS = {}
+Animify_Shaders = {}
