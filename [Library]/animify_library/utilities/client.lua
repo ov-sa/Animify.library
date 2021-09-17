@@ -14,9 +14,25 @@
 --[[ Variables ]]--
 -------------------
 
-resource = getResourceRootElement(getThisResource())
 CLIENT_MTA_RESOLUTION = {GuiElement.getScreenSize()}
 loadstring(exports.beautify_library:fetchImports())()
+
+
+-----------------------------------------
+--[[ Function: Retrieves File's Data ]]--
+-----------------------------------------
+
+function getFileData(filePath)
+
+    if not filePath or not File.exists(filePath) then return false end
+    local file = File.open(filePath)
+    if not file then return false end
+
+    local fileData = file:read(file:getSize())
+    file:close()
+    return fileData
+
+end
 
 
 -----------------------------------

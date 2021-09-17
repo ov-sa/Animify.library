@@ -1,6 +1,7 @@
 <meta>
 
     <info author="OvileAmriam" name="Animify Library" type="Library" version="1.0.0"/>
+    <min_mta_version client="1.5.8"/>
     <oop>true</oop>
 
     <!-- Imports -->
@@ -8,6 +9,7 @@
 
     <!-- Settings & Utilities -->
     <script src="utilities/client.lua" type="client" cache="false"/>
+    <script src="settings/client.lua" type="client" cache="false"/>
 
     <!-- Configurations -->
     <script src="configurations/templates/initial.lua" type="client" cache="false"/>
@@ -23,9 +25,11 @@
     <script src="configurations/templates/card.lua" type="client" cache="false"/>
 
     <!-- GUIs -->
-    <script src="gui/core.lua" type="client" cache="false"/>
+    <script src="gui/coreUI.lua" type="client" cache="false"/>
+    <!--script src="gui/hintUI.lua" type="client" cache="false"/-->
 
     <!-- Handlers -->
+    <script src="handlers/cinemator.lua" type="client" cache="false"/>
     <script src="handlers/initial.lua" type="client" cache="false"/>
 
     <!-- Files: Assets: Fonts -->
@@ -33,5 +37,15 @@
 
     <!-- Files: Assets: Images -->
     <file src="files/assets/images/banners/ov.png"/>
+
+    <!-- Files: Assets: Models -->
+    <file src="files/assets/models/ring/ring.dff"/>
+    <file src="files/assets/models/ring/ring.txd"/>
+    <file src="files/assets/models/ring/ring.col"/>
+
+    <!-- Files: Assets: Shaders -->
+    <file src="files/assets/shaders/mta-helper.fx"/>
+    <script src="files/assets/shaders/initial.lua" type="client" cache="false"/>
+    <script src="files/assets/shaders/axisify/main.lua" type="client" cache="false"/>
 
 </meta>
