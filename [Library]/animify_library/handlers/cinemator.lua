@@ -152,7 +152,7 @@ local function renderCinemator()
                 cinemationData.pedData.boneData.axisID = i
             end
         end
-        dxSetShaderValue(j.shader, "axisAlpha", (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
+        dxSetShaderValue(j.shader, "axisAlpha", (not cinemationData.pedData.boneData and 0) or (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
     end
 
     for i, j in ipairs(coreUI.viewportUI.sliders) do
