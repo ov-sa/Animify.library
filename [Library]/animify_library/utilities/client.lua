@@ -31,10 +31,3 @@ function setUITheme(theme)
     return true
 
 end
-
-
-local function isCoordWithinCircle(x, y, cx, cy, cr)
-
-
-
-end

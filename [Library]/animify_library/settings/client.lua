@@ -14,8 +14,6 @@
 --[[ Settings ]]--
 ------------------
 
-resource = getResourceRootElement(getThisResource())
-
 availablePedBones = {
     [0] = {},
     [1] = {},

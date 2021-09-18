@@ -61,6 +61,7 @@ end
 local function renderCinemator(isFetchingInput, cbArguments)
 
     if not isFetchingInput then
+        local indicatorRadius = cinemationData.boneIndicator.size*0.5
         local _, _, pedRotation = getElementRotation(cinemationData.pedData.createdPed)
         for i, j in pairs(availablePedBones) do
             local isBoneSelected = cinemationData.pedData.boneData and (cinemationData.pedData.boneData.boneID == i)
@@ -75,8 +76,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
             end
             local indicatorX, indicatorY = getScreenFromWorldPosition(bonePosVector)
             if indicatorX and indicatorY then
-                indicatorX, indicatorY = indicatorX - (cinemationData.boneIndicator.size*0.5), indicatorY - (cinemationData.boneIndicator.size*0.5)
-                if not isBoneSelected and isMouseOnPosition(indicatorX, indicatorY, cinemationData.boneIndicator.size, cinemationData.boneIndicator.size) then
+                if not isBoneSelected and isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
                     if prevMouseKeyClickState == "mouse1" then
                         boneRotCache = false
                         cinemationData.pedData.boneData = {
@@ -85,6 +85,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
                         }
                     end
                 end
+                indicatorX, indicatorY = indicatorX - indicatorRadius, indicatorY - indicatorRadius
                 dxDrawImage(indicatorX, indicatorY, cinemationData.boneIndicator.size, cinemationData.boneIndicator.size, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
             end
         end
@@ -113,7 +114,9 @@ local function renderCinemator(isFetchingInput, cbArguments)
             else
                 if not cinemationData.pedData.boneData.axisID or not isLMBOnHold then
                     local cursorX, cursorY = getAbsoluteCursorPosition()
-                    local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), Vector3(getWorldFromScreenPosition(cursorX, cursorY, 5)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
+                    local cameraDistance = Vector3(getElementPosition(getCamera())) - Vector3(getElementPosition(cinemationData.pedData.createdPed))
+                    cameraDistance = cameraDistance.length + 1
+                    local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
                     if sightData[1] and sightData[5] then
                         focussedAxis = sightData[5]
                     end
