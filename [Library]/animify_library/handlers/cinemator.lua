@@ -24,7 +24,6 @@ local imports = {
     isMouseOnCircularPosition = isMouseOnCircularPosition,
     isKeyOnHold = isKeyOnHold,
     isMouseClicked = isMouseClicked,
-    isMouseScrolled = isMouseScrolled,
     createPed = createPed,
     createObject = createObject,
     removePedClothes = removePedClothes,
@@ -171,7 +170,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
                     if isLMBOnHold then
                         local cursorRelX, cursorRelY = imports.getCursorPosition()
                         if not boneRotCache then
-                            --yaw, pitch, roll
+                            --yaw, pitch, roll --TODO: 
                             boneRotCache = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
                         end
                         local boneAxisID = cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
