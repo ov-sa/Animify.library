@@ -43,11 +43,21 @@ local cinemationData = {
 }
 
 
--------------------------------------
---[[ Function: Renders Cinemator ]]--
--------------------------------------
+------------------------------------------------
+--[[ Functions: Renders Cinemator/Ped-Bones ]]--
+------------------------------------------------
 
 local boneRotCache = false
+
+local function renderPedBones()
+
+    if boneRotCache then
+        setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, unpack(boneRotCache))
+        updateElementRpHAnim(cinemationData.pedData.createdPed)
+    end
+
+end
+
 local function renderCinemator(isFetchingInput, cbArguments)
 
     if not isFetchingInput then
@@ -148,13 +158,6 @@ local function renderCinemator(isFetchingInput, cbArguments)
 
 end
 
-addEventHandler("onClientPedsProcessed", root, function()
-    if boneRotCache then
-        setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, unpack(boneRotCache))
-        updateElementRpHAnim(cinemationData.pedData.createdPed)
-    end
-end)
-
 
 -----------------------------------------
 --[[ Function: Initializes Cinemator ]]--
@@ -182,6 +185,7 @@ function initCinemator()
     end
     beautify.render.create(renderCinemator)
     beautify.render.create(renderCinemator, nil, true)
+    addEventHandler("onClientPedsProcessed", root, renderPedBones)
     return true
 
 end
