@@ -19,10 +19,12 @@ local imports = {
     ipairs = ipairs,
     tocolor = tocolor,
     addEventHandler = addEventHandler,
+    getCursorPosition = getCursorPosition,
     getAbsoluteCursorPosition = getAbsoluteCursorPosition,
     isMouseOnCircularPosition = isMouseOnCircularPosition,
-    isMouseClicked = isMouseClicked,
     isKeyOnHold = isKeyOnHold,
+    isMouseClicked = isMouseClicked,
+    isMouseScrolled = isMouseScrolled,
     createPed = createPed,
     createObject = createObject,
     removePedClothes = removePedClothes,
@@ -70,12 +72,18 @@ local cinemationData = {
     },
     axisRings = {
         x = {
+            axisIndex = 1,
+            rotationIndex = "x",
             color = {255, 0, 0}
         },
         y = {
+            axisIndex = 2,
+            rotationIndex = "y",
             color = {0, 255, 0}
         },
         z = {
+            axisIndex = 3,
+            rotationIndex = "y",
             color = {0, 0, 255}
         }
     }
@@ -161,29 +169,13 @@ local function renderCinemator(isFetchingInput, cbArguments)
                     end
                 else
                     if isLMBOnHold then
-                        --local yaw, pitch, roll = imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)
+                        local cursorRelX, cursorRelY = imports.getCursorPosition()
                         if not boneRotCache then
+                            --yaw, pitch, roll
                             boneRotCache = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
                         end
-                        if cinemationData.pedData.boneData.axisID == "x" then
-                            if getKeyState("arrow_l") then
-                                boneRotCache[1] = boneRotCache[1] - 1
-                            elseif getKeyState("arrow_r") then
-                                boneRotCache[1] = boneRotCache[1] + 1
-                            end
-                        elseif cinemationData.pedData.boneData.axisID == "y" then
-                            if getKeyState("arrow_l") then
-                                boneRotCache[2] = boneRotCache[2] - 1
-                            elseif getKeyState("arrow_r") then
-                                boneRotCache[2] = boneRotCache[2] + 1
-                            end
-                        elseif cinemationData.pedData.boneData.axisID == "z" then
-                            if getKeyState("arrow_l") then
-                                boneRotCache[3] = boneRotCache[3] - 1
-                            elseif getKeyState("arrow_r") then
-                                boneRotCache[3] = boneRotCache[3] + 1
-                            end
-                        end
+                        local boneAxisID = cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
+                        boneRotCache[boneAxisID] = (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360
                     end
                 end
             end
@@ -224,8 +216,8 @@ function initCinemator()
             end
         end
     end
-    beautify.render.create(renderCinemator)
     beautify.render.create(renderCinemator, nil, true)
+    beautify.render.create(renderCinemator)
     imports.addEventHandler("onClientPedsProcessed", root, renderPedBones)
     return true
 
