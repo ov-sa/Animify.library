@@ -9,13 +9,23 @@
 ----------------------------------------------------------------
 
 
+-----------------
+--[[ Imports ]]--
+-----------------
+
+local imports = {
+    addEventHandler = addEventHandler,
+    setUITheme = setUITheme
+}
+
+
 -----------------------------------------
 --[[ Event: On Client Resource Start ]]--
 -----------------------------------------
 
-addEventHandler("onClientResourceStart", resourceRoot, function()
+imports.addEventHandler("onClientResourceStart", resource, function()
 
-    setUITheme("ov-dark-theme")
+    imports.setUITheme("ov-dark-theme")
     initCinemator()
     createCoreUI()
 

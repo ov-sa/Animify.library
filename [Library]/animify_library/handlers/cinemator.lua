@@ -9,6 +9,45 @@
 ----------------------------------------------------------------
 
 
+-----------------
+--[[ Imports ]]--
+-----------------
+
+local imports = {
+    unpack = unpack,
+    pairs = pairs,
+    ipairs = ipairs,
+    tocolor = tocolor,
+    addEventHandler = addEventHandler,
+    getAbsoluteCursorPosition = getAbsoluteCursorPosition,
+    isMouseOnCircularPosition = isMouseOnCircularPosition,
+    isMouseClicked = isMouseClicked,
+    isKeyOnHold = isKeyOnHold,
+    createPed = createPed,
+    createObject = createObject,
+    removePedClothes = removePedClothes,
+    setElementCollidableWith = setElementCollidableWith,
+    getElementPosition = getElementPosition,
+    setElementPosition = setElementPosition,
+    getElementRotation = getElementRotation,
+    setElementRotation = setElementRotation,
+    getElementBoneRotation = getElementBoneRotation,
+    setElementBoneRotation = setElementBoneRotation,
+    updateElementRpHAnim = updateElementRpHAnim,
+    getScreenFromWorldPosition = getScreenFromWorldPosition,
+    processLineOfSight = processLineOfSight,
+    dxCreateTexture = dxCreateTexture,
+    dxCreateShader = dxCreateShader,
+    dxSetShaderValue = dxSetShaderValue,
+    dxDrawImage = dxDrawImage,
+    engineApplyShaderToWorldTexture = engineApplyShaderToWorldTexture,
+    Vector3 = Vector3,
+    showChat = showChat,
+    getCamera = getCamera,
+    setCameraMatrix = setCameraMatrix
+}
+
+
 -------------------
 --[[ Variables ]]--
 -------------------
@@ -25,9 +64,9 @@ local cinemationData = {
     },
     boneIndicator = {
         size = 10,
-        focussedColor = tocolor(255, 255, 255, 255),
-        unfocussedColor = tocolor(255, 255, 255, 10),
-        bgPath = dxCreateTexture(":beautify_library/files/assets/images/canvas/circle.rw", "argb", true, "clamp")
+        focussedColor = imports.tocolor(255, 255, 255, 255),
+        unfocussedColor = imports.tocolor(255, 255, 255, 10),
+        bgPath = imports.dxCreateTexture(":beautify_library/files/assets/images/canvas/circle.rw", "argb", true, "clamp")
     },
     axisRings = {
         x = {
@@ -52,8 +91,8 @@ local boneRotCache = false
 local function renderPedBones()
 
     if boneRotCache then
-        setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, unpack(boneRotCache))
-        updateElementRpHAnim(cinemationData.pedData.createdPed)
+        imports.setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, imports.unpack(boneRotCache))
+        imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
     end
 
 end
@@ -62,21 +101,21 @@ local function renderCinemator(isFetchingInput, cbArguments)
 
     if not isFetchingInput then
         local indicatorRadius = cinemationData.boneIndicator.size*0.5
-        local _, _, pedRotation = getElementRotation(cinemationData.pedData.createdPed)
-        for i, j in pairs(availablePedBones) do
+        local _, _, pedRotation = imports.getElementRotation(cinemationData.pedData.createdPed)
+        for i, j in imports.pairs(availablePedBones) do
             local isBoneSelected = cinemationData.pedData.boneData and (cinemationData.pedData.boneData.boneID == i)
-            local bonePosVector = Vector3(getPedBonePosition(cinemationData.pedData.createdPed, i))
+            local bonePosVector = imports.Vector3(getPedBonePosition(cinemationData.pedData.createdPed, i))
             if isBoneSelected then
-                setElementPosition(cinemationData.axisRings.x.object, bonePosVector)
-                setElementPosition(cinemationData.axisRings.y.object, bonePosVector)
-                setElementPosition(cinemationData.axisRings.z.object, bonePosVector)
-                setElementRotation(cinemationData.axisRings.y.object, 0, 0, pedRotation)
-                setElementRotation(cinemationData.axisRings.y.object, 0, 90, pedRotation)
-                setElementRotation(cinemationData.axisRings.z.object, 90, 0, pedRotation)
+                imports.setElementPosition(cinemationData.axisRings.x.object, bonePosVector)
+                imports.setElementPosition(cinemationData.axisRings.y.object, bonePosVector)
+                imports.setElementPosition(cinemationData.axisRings.z.object, bonePosVector)
+                imports.setElementRotation(cinemationData.axisRings.y.object, 0, 0, pedRotation)
+                imports.setElementRotation(cinemationData.axisRings.y.object, 0, 90, pedRotation)
+                imports.setElementRotation(cinemationData.axisRings.z.object, 90, 0, pedRotation)
             end
-            local indicatorX, indicatorY = getScreenFromWorldPosition(bonePosVector)
+            local indicatorX, indicatorY = imports.getScreenFromWorldPosition(bonePosVector)
             if indicatorX and indicatorY then
-                if not isBoneSelected and isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
+                if not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
                     if prevMouseKeyClickState == "mouse1" then
                         boneRotCache = false
                         cinemationData.pedData.boneData = {
@@ -86,25 +125,25 @@ local function renderCinemator(isFetchingInput, cbArguments)
                     end
                 end
                 indicatorX, indicatorY = indicatorX - indicatorRadius, indicatorY - indicatorRadius
-                dxDrawImage(indicatorX, indicatorY, cinemationData.boneIndicator.size, cinemationData.boneIndicator.size, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
+                imports.dxDrawImage(indicatorX, indicatorY, cinemationData.boneIndicator.size, cinemationData.boneIndicator.size, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
             end
         end
-        for i, j in ipairs(coreUI.viewportUI.sliders) do
+        for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
             local _, sliderPercent = beautify.slider.getPercent(j.createdElement)
             if sliderPercent then
                 sliderPercent = sliderPercent/100
                 if j.sliderType == "ped_rotation" then
-                    setElementRotation(cinemationData.pedData.createdPed, 0, 0, sliderPercent*360)
+                    imports.setElementRotation(cinemationData.pedData.createdPed, 0, 0, sliderPercent*360)
                 elseif j.sliderType == "camera_fov" then
                     cinemationData.pedData.cameraMatrix[8] = 40 + (sliderPercent*40)
                 end
             end
         end
-        showChat(false)
-        setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
+        imports.showChat(false)
+        imports.setCameraMatrix(imports.unpack(cinemationData.pedData.cameraMatrix))
     else
-        local isMouseKeyClicked = isMouseClicked()
-        local isLMBOnHold = (isMouseKeyClicked ~= "mouse1") and isKeyOnHold("mouse1")
+        local isMouseKeyClicked = imports.isMouseClicked()
+        local isLMBOnHold = (isMouseKeyClicked ~= "mouse1") and imports.isKeyOnHold("mouse1")
         prevMouseKeyClickState = isMouseKeyClicked
         local focussedAxis = false
         if cinemationData.pedData.boneData then
@@ -113,18 +152,18 @@ local function renderCinemator(isFetchingInput, cbArguments)
                 cinemationData.pedData.boneData = false
             else
                 if not cinemationData.pedData.boneData.axisID or not isLMBOnHold then
-                    local cursorX, cursorY = getAbsoluteCursorPosition()
-                    local cameraDistance = Vector3(getElementPosition(getCamera())) - Vector3(getElementPosition(cinemationData.pedData.createdPed))
+                    local cursorX, cursorY = imports.getAbsoluteCursorPosition()
+                    local cameraDistance = imports.Vector3(imports.getElementPosition(imports.getCamera())) - imports.Vector3(imports.getElementPosition(cinemationData.pedData.createdPed))
                     cameraDistance = cameraDistance.length + 1
-                    local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
+                    local sightData = {imports.processLineOfSight(imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
                     if sightData[1] and sightData[5] then
                         focussedAxis = sightData[5]
                     end
                 else
                     if isLMBOnHold then
-                        --local yaw, pitch, roll = getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)
+                        --local yaw, pitch, roll = imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)
                         if not boneRotCache then
-                            boneRotCache = {getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
+                            boneRotCache = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
                         end
                         if cinemationData.pedData.boneData.axisID == "x" then
                             if getKeyState("arrow_l") then
@@ -149,13 +188,13 @@ local function renderCinemator(isFetchingInput, cbArguments)
                 end
             end
         end
-        for i, j in pairs(cinemationData.axisRings) do
+        for i, j in imports.pairs(cinemationData.axisRings) do
             if (focussedAxis == j.object) and (cinemationData.pedData.boneData.axisID ~= i) then
                 if isMouseKeyClicked == "mouse1" then
                     cinemationData.pedData.boneData.axisID = i
                 end
             end
-            dxSetShaderValue(j.shader, "axisAlpha", (not cinemationData.pedData.boneData and 0) or (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
+            imports.dxSetShaderValue(j.shader, "axisAlpha", (not cinemationData.pedData.boneData and 0) or (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
         end
     end
 
@@ -169,26 +208,25 @@ end
 function initCinemator()
 
     initModels()
-    cinemationData.pedData.createdPed = createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
+    cinemationData.pedData.createdPed = imports.createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
     for i = 0, 17 do
-        removePedClothes(cinemationData.pedData.createdPed, i)
+        imports.removePedClothes(cinemationData.pedData.createdPed, i)
     end
-
-    for i, j in pairs(cinemationData.axisRings) do
-        j.object = createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
-        setElementCollidableWith(j.object, cinemationData.pedData.createdPed, false)
-        j.shader = dxCreateShader(Animify_Shaders["Axisifier"])
-        engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
-        dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
-        for k, v in pairs(cinemationData.axisRings) do
+    for i, j in imports.pairs(cinemationData.axisRings) do
+        j.object = imports.createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
+        imports.setElementCollidableWith(j.object, cinemationData.pedData.createdPed, false)
+        j.shader = imports.dxCreateShader(Animify_Shaders["Axisifier"])
+        imports.engineApplyShaderToWorldTexture(j.shader, "animify_axis_ring", j.object)
+        imports.dxSetShaderValue(j.shader, "axisColor", j.color[1]/255, j.color[2]/255, j.color[3]/255, 1)
+        for k, v in imports.pairs(cinemationData.axisRings) do
             if v.object and (j.object ~= v.object) then
-                setElementCollidableWith(j.object, v.object, false)
+                imports.setElementCollidableWith(j.object, v.object, false)
             end
         end
     end
     beautify.render.create(renderCinemator)
     beautify.render.create(renderCinemator, nil, true)
-    addEventHandler("onClientPedsProcessed", root, renderPedBones)
+    imports.addEventHandler("onClientPedsProcessed", root, renderPedBones)
     return true
 
 end

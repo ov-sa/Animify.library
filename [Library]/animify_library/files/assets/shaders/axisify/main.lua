@@ -9,25 +9,35 @@
 ----------------------------------------------------------------
 
 
+-----------------
+--[[ Imports ]]--
+-----------------
+
+local imports = {
+    ipairs = ipairs,
+    fetchFileData = fetchFileData
+}
+
+
 -------------------
 --[[ Variables ]]--
 -------------------
 
 local shaderReference = "Axisifier"
-local imports = {
+local shaderDependencies = {
     data = "",
     {filePath = "files/assets/shaders/mta-helper.fx"}
 }
 
 
-----------------
---[[ Shader ]]--
-----------------
+------------------
+--[[ Raw Data ]]--
+------------------
 
-for i, j in ipairs(imports) do
-    local fileData = fetchFileData(j.filePath)
+for i, j in imports.ipairs(shaderDependencies) do
+    local fileData = imports.fetchFileData(j.filePath)
     if fileData then
-        imports.data = imports.data.."\n"..fileData
+        shaderDependencies.data = shaderDependencies.data.."\n"..fileData
     end
 end
 
@@ -36,7 +46,7 @@ Animify_Shaders[shaderReference] = [[
 -->> Imports <<--
 -----------------*/
 
-]]..imports.data..[[
+]]..shaderDependencies.data..[[
 
 /*-----------------
 -->> Variables <<--

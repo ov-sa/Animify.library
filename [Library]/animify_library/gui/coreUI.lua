@@ -9,6 +9,21 @@
 ----------------------------------------------------------------
 
 
+-----------------
+--[[ Imports ]]--
+-----------------
+
+local imports = {
+    ipairs = ipairs,
+    tocolor = tocolor,
+    dxCreateFont = dxCreateFont,
+    dxCreateTexture = dxCreateTexture,
+    dxDrawImage = dxDrawImage,
+    dxDrawText = dxDrawText,
+    showCursor = showCursor
+}
+
+
 -------------------
 --[[ Variables ]]--
 -------------------
@@ -23,9 +38,9 @@ coreUI = {
             text = "O   P   T   I   O   N   S",
             marginY = 3,
             width = 0, height = 60,
-            font = dxCreateFont("files/assets/fonts/impact.ttf", 20),
-            fontColor = tocolor(175, 175, 175, 255),
-            bgPath = dxCreateTexture("files/assets/images/banners/ov.png", "argb", true, "clamp")
+            font = imports.dxCreateFont("files/assets/fonts/impact.ttf", 20),
+            fontColor = imports.tocolor(175, 175, 175, 255),
+            bgPath = imports.dxCreateTexture("files/assets/images/banners/ov.png", "argb", true, "clamp")
         },
         options = {
             marginY = 5, paddingY = 8,
@@ -113,14 +128,14 @@ function createCoreUI()
     coreUI.optionsUI.__endY = (coreUI.optionsUI.banner.marginY*2) + coreUI.optionsUI.banner.height + (coreUI.optionsUI.options.marginY*2) + (coreUI.optionsUI.options.height*math.max(0, #coreUI.optionsUI.options)) + (coreUI.optionsUI.options.paddingY*math.max(0, #coreUI.optionsUI.options - 1))
     coreUI.optionsUI.createdParent = beautify.card.create(coreUI.optionsUI.paddingX, coreUI.optionsUI.paddingY, coreUI.optionsUI.width, coreUI.optionsUI.__endY, nil, false)
     coreUI.optionsUI.__endY = coreUI.optionsUI.paddingY + coreUI.optionsUI.__endY + coreUI.optionsUI.borderPadding
-    for i, j in ipairs(coreUI.optionsUI.options) do
+    for i, j in imports.ipairs(coreUI.optionsUI.options) do
         local options_button = beautify.button.create(j.title, 0, (coreUI.optionsUI.banner.marginY*2) + coreUI.optionsUI.banner.height + coreUI.optionsUI.options.marginY + (coreUI.optionsUI.options.height + coreUI.optionsUI.options.paddingY)*(i - 1), "default", coreUI.optionsUI.width, coreUI.optionsUI.options.height, coreUI.optionsUI.createdParent, false)
         beautify.setUIVisible(options_button, true)
     end
     beautify.setUIVisible(coreUI.optionsUI.createdParent, true)
     beautify.render.create(function()
-        dxDrawImage(0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.bgPath, 0, 0, 0, -1, false)
-        dxDrawText(coreUI.optionsUI.banner.text, 0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.marginY + coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.fontColor, 1, coreUI.optionsUI.banner.font, "center", "center", true, false, false, false)
+        imports.dxDrawImage(0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.bgPath, 0, 0, 0, -1, false)
+        imports.dxDrawText(coreUI.optionsUI.banner.text, 0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.marginY + coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.fontColor, 1, coreUI.optionsUI.banner.font, "center", "center", true, false, false, false)
     end, coreUI.optionsUI.createdParent)
 
     -->> Viewer UI <<--
@@ -130,7 +145,7 @@ function createCoreUI()
     beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
     local viewer_deckpane_startX, viewer_deckpane_startY = 0, (coreUI.viewerUI.banner.marginY*2) + coreUI.viewerUI.marginY + coreUI.viewerUI.banner.height
     local viewer_deckpane = beautify.deckpane.create(0, viewer_deckpane_startY, coreUI.viewerUI.width, coreUI.viewerUI.height - viewer_deckpane_startY, coreUI.viewerUI.createdParent, false)
-    for i, j in ipairs(coreUI.viewerUI.decks) do
+    for i, j in imports.ipairs(coreUI.viewerUI.decks) do
         local viewer_deck = beautify.deck.create(j.title, coreUI.viewerUI.decks.height, viewer_deckpane, false)
         if j.deckType == "view_frames" then
             local viewer_gridlist_width = coreUI.viewerUI.width - 10
@@ -158,18 +173,18 @@ function createCoreUI()
     end
     beautify.setUIVisible(viewer_deckpane, true)
     beautify.render.create(function()
-        dxDrawImage(0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.bgPath, 0, 0, 0, -1, false)
-        dxDrawText(coreUI.viewerUI.banner.text, 0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.marginY + coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.fontColor, 1, coreUI.viewerUI.banner.font, "center", "center", true, false, false, false)
+        imports.dxDrawImage(0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.bgPath, 0, 0, 0, -1, false)
+        imports.dxDrawText(coreUI.viewerUI.banner.text, 0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.marginY + coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.fontColor, 1, coreUI.viewerUI.banner.font, "center", "center", true, false, false, false)
     end, coreUI.viewerUI.createdParent)
 
     -->> View Port UI <<--
-    for i, j in ipairs(coreUI.viewportUI.sliders) do
+    for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
         j.createdElement = beautify.slider.create(CLIENT_MTA_RESOLUTION[1] - coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.marginY + ((coreUI.viewportUI.sliders.height + coreUI.viewportUI.sliders.paddingY)*(i - 1)), coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height, "horizontal", nil, false)
         beautify.slider.setText(j.createdElement, j.title)
         beautify.slider.setPercent(j.createdElement, j.defaultPercent)
         beautify.setUIVisible(j.createdElement, true)
     end
-    showCursor(true)
+    imports.showCursor(true)
 
     return true
 
