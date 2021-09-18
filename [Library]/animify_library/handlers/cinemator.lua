@@ -92,7 +92,8 @@ local function renderCinemator(isFetchingInput, cbArguments)
         showChat(false)
         setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
     else
-        local isMouseKeyClicked, isLMBOnHold = isMouseClicked(), isKeyOnHold("mouse1")
+        local isMouseKeyClicked = isMouseClicked()
+        local isLMBOnHold = (isMouseKeyClicked ~= "mouse1") and isKeyOnHold("mouse1")
         prevMouseKeyClickState = isMouseKeyClicked
         local focussedAxis = false
         if cinemationData.pedData.boneData then
@@ -136,7 +137,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
             end
         end
         for i, j in pairs(cinemationData.axisRings) do
-            if (focussedAxis == j.object) and (cinemationData.pedData.boneData.axisID ~= focussedAxis) then
+            if (focussedAxis == j.object) and (cinemationData.pedData.boneData.axisID ~= i) then
                 if isMouseKeyClicked == "mouse1" then
                     cinemationData.pedData.boneData.axisID = i
                 end
