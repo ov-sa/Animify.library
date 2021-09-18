@@ -13,7 +13,6 @@
 --[[ Variables ]]--
 -------------------
 
-local prevLMBClickState, prevRMBClickState = false, false
 local cinemationData = {
     pedData = {
         createdPed = false,
@@ -48,33 +47,9 @@ local cinemationData = {
 -------------------------------------
 
 local boneRotCache = false
-local function renderCinemator()
+local function renderCinemator(cbArguments)
 
-    local isLCTRLOnHold = false
-    local isLMBClicked, isRMBClicked = false, false
-    if not GuiElement.isMTAWindowActive() then
-        isLCTRLOnHold = getKeyState("lctrl")
-        if not prevLMBClickState then
-            if getKeyState("mouse1") then
-                isLMBClicked = true
-                prevLMBClickState = true
-            end
-        else
-            if not getKeyState("mouse1") then
-                prevLMBClickState = false
-            end
-        end
-        if not prevRMBClickState then
-            if getKeyState("mouse2") then
-                isRMBClicked = true
-                prevRMBClickState = true
-            end
-        else
-            if not getKeyState("mouse2") then
-                prevRMBClickState = false
-            end
-        end
-    end
+    local clickedMouseKey, isLMBOnHold = isMouseClicked(), isKeyOnHold("mouse1")
 
     local _, _, pedRotation = getElementRotation(cinemationData.pedData.createdPed)
     for i, j in pairs(availablePedBones) do
@@ -92,12 +67,12 @@ local function renderCinemator()
         if x and y then
             local indicatorSize = cinemationData.boneIndicator.size
             local indicatorX, indicatorY = x - (indicatorSize*0.5), y - (indicatorSize*0.5)
-            if isRMBClicked then
+            if clickedMouseKey == "mouse2" then
                 boneRotCache = false
                 cinemationData.pedData.boneData = false
             else
                 if not isBoneSelected then
-                    if isLMBClicked and isMouseOnPosition(indicatorX, indicatorY, indicatorSize, indicatorSize) then
+                    if clickedMouseKey == "mouse1" and isMouseOnPosition(indicatorX, indicatorY, indicatorSize, indicatorSize) then
                         boneRotCache = false
                         cinemationData.pedData.boneData = {
                             boneID = i,
@@ -112,14 +87,14 @@ local function renderCinemator()
 
     local focussedAxis = false
     if cinemationData.pedData.boneData then
-        if not cinemationData.pedData.boneData.axisID or not isLCTRLOnHold then
+        if not cinemationData.pedData.boneData.axisID or not isLMBOnHold then
             local cursorX, cursorY = getAbsoluteCursorPosition()
             local sightData = {processLineOfSight(Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), Vector3(getWorldFromScreenPosition(cursorX, cursorY, 5)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
             if sightData[1] and sightData[5] then
                 focussedAxis = sightData[5]
             end
         else
-            if isLCTRLOnHold then
+            if isLMBOnHold then
                 --local yaw, pitch, roll = getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)
                 if not boneRotCache then
                     boneRotCache = {getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
@@ -148,7 +123,7 @@ local function renderCinemator()
     end
     for i, j in pairs(cinemationData.axisRings) do
         if (focussedAxis == j.object) and (cinemationData.pedData.boneData.axisID ~= focussedAxis) then
-            if isLMBClicked then
+            if clickedMouseKey == "mouse1" then
                 cinemationData.pedData.boneData.axisID = i
             end
         end
@@ -170,7 +145,7 @@ local function renderCinemator()
     setCameraMatrix(unpack(cinemationData.pedData.cameraMatrix))
 
 end
-addEventHandler("onClientPedsProcessed", getRootElement(), function()
+addEventHandler("onClientPedsProcessed", root, function()
     if boneRotCache then
         setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, unpack(boneRotCache))
         updateElementRpHAnim(cinemationData.pedData.createdPed)
@@ -203,7 +178,8 @@ function initCinemator()
             end
         end
     end
-    beautify.render.create(renderCinemator)
+    --addEventHandler("onClientRender", root, renderCinemator, false, "low-999")
+    beautify.render.create(renderCinemator, nil, "testargument")
     return true
 
 end

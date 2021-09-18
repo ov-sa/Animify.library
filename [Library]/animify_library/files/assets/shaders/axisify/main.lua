@@ -25,7 +25,7 @@ local imports = {
 ----------------
 
 for i, j in ipairs(imports) do
-    local fileData = getFileData(j.filePath)
+    local fileData = fetchFileData(j.filePath)
     if fileData then
         imports.data = imports.data.."\n"..fileData
     end
