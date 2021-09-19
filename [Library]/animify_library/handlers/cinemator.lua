@@ -54,10 +54,12 @@ local imports = {
 -------------------
 
 local prevMouseKeyClickState = false
+local prevCursorRel = false
 local cinemationData = {
     pedData = {
         createdPed = false,
         boneData = false,
+        boneOffsets = {},
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
@@ -93,14 +95,12 @@ local cinemationData = {
 --[[ Functions: Renders Cinemator/Ped-Bones ]]--
 ------------------------------------------------
 
-local boneRotCache = false
-
 local function renderPedBones()
 
-    if boneRotCache then
-        imports.setElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID, imports.unpack(boneRotCache))
-        imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
+    for i, j in imports.pairs(cinemationData.pedData.boneOffsets) do
+        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j.rotation.current))
     end
+    imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
 
 end
 
@@ -124,7 +124,6 @@ local function renderCinemator(isFetchingInput, cbArguments)
             if indicatorX and indicatorY then
                 if not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
                     if prevMouseKeyClickState == "mouse1" then
-                        boneRotCache = false
                         cinemationData.pedData.boneData = {
                             boneID = i,
                             axisID = false
@@ -155,26 +154,39 @@ local function renderCinemator(isFetchingInput, cbArguments)
         local focussedAxis = false
         if cinemationData.pedData.boneData then
             if isMouseKeyClicked == "mouse2" then
-                boneRotCache = false
                 cinemationData.pedData.boneData = false
+                prevCursorRel = false
             else
                 if not cinemationData.pedData.boneData.axisID or not isLMBOnHold then
                     local cursorX, cursorY = imports.getAbsoluteCursorPosition()
                     local cameraDistance = imports.Vector3(imports.getElementPosition(imports.getCamera())) - imports.Vector3(imports.getElementPosition(cinemationData.pedData.createdPed))
-                    cameraDistance = cameraDistance.length + 1
+                    cameraDistance = cameraDistance.length + 2
                     local sightData = {imports.processLineOfSight(imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
                     if sightData[1] and sightData[5] then
                         focussedAxis = sightData[5]
                     end
+                    prevCursorRel = false
                 else
                     if isLMBOnHold then
                         local cursorRelX, cursorRelY = imports.getCursorPosition()
-                        if not boneRotCache then
-                            --yaw, pitch, roll --TODO: 
-                            boneRotCache = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
+                        if not prevCursorRel then
+                            prevCursorRel = {cursorRelX, cursorRelY}
+                            if not cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)] then
+                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)] = {
+                                    rotation = {
+                                        initial = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)},
+                                        current = {0, 0, 0}
+                                    }
+                                }
+                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current = cloneTableDatas(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial, false)
+                            else
+                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial = cloneTableDatas(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current, false)
+                            end
                         end
+                        cursorRelX, cursorRelY = cursorRelX - prevCursorRel[1], cursorRelY - prevCursorRel[2]
+                        local boneReference = cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)]
                         local boneAxisID = cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
-                        boneRotCache[boneAxisID] = (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360
+                        boneReference.rotation.current[boneAxisID] = (boneReference.rotation.initial[boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
                     end
                 end
             end
@@ -186,7 +198,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
                 end
             end
             imports.dxSetShaderValue(j.shader, "axisAlpha", (not cinemationData.pedData.boneData and 0) or (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
-        end
+        end 
     end
 
 end
