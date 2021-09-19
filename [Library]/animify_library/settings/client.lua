@@ -16,10 +16,10 @@
 
 availablePedBones = {
     [0] = {
-        axes = {}
+        axes = {x = "y", y = "z", z = "x"}
     },
     [1] = {
-        axes = {}
+        axes = {x = "y", y = "x"}
     },
     [2] = {
         axes = {}
@@ -46,7 +46,7 @@ availablePedBones = {
         axes = {}
     },
     [22] = {
-        axes = {}
+        axes = {x = "y", y = "x"}
     },
     [23] = {
         axes = {}
@@ -55,16 +55,16 @@ availablePedBones = {
         axes = {}
     },
     [25] = {
-        axes = {}
+        axes = {y = "z", z = "y"}
     },
     [26] = {
-        axes = {}
+        axes = {x = "z", y = "x", z = "y"}
     },
     [31] = {
-        axes = {}
+        axes = {x = "z", z = "x"}
     },
     [32] = {
-        axes = {}
+        axes = {x = "y", y = "x"}
     },
     [33] = {
         axes = {}
@@ -73,10 +73,10 @@ availablePedBones = {
         axes = {}
     },
     [35] = {
-        axes = {}
+        axes = {y = "z", z = "y"}
     },
     [36] = {
-        axes = {}
+        axes = {x = "z", y = "x", z = "y"}
     },
     [41] = {
         axes = {}
@@ -88,7 +88,7 @@ availablePedBones = {
         axes = {}
     },
     [44] = {
-        axes = {}
+        axes = {x = "z", z = "x"}
     },
     [51] = {
         axes = {}
@@ -100,8 +100,10 @@ availablePedBones = {
         axes = {}
     },
     [54] = {
-        axes = {}
-    },
+        axes = {x = "z", z = "x"}
+    }
+    --[[
+    --Unsupported right now
     [201] = {
         axes = {}
     },
@@ -110,5 +112,5 @@ availablePedBones = {
     },
     [302] = {
         axes = {}
-    }
+    }]]
 }

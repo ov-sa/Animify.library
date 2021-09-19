@@ -200,7 +200,8 @@ local function renderCinemator(isFetchingInput, cbArguments)
                         end
                         cursorRelX, cursorRelY = cursorRelX - prevCursorRel[1], cursorRelY - prevCursorRel[2]
                         local boneReference = cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)]
-                        local boneAxisID = availablePedBones[(cinemationData.pedData.boneData.boneID)].axes[(cinemationData.pedData.boneData.axisID)] or cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
+                        local isBoneAxisIndexModified = availablePedBones[(cinemationData.pedData.boneData.boneID)].axes[(cinemationData.pedData.boneData.axisID)]
+                        local boneAxisID = (isBoneAxisIndexModified and cinemationData.axisRings[isBoneAxisIndexModified].axisIndex) or cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
                         boneReference.rotation.current[boneAxisID] = (boneReference.rotation.initial[boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
                     end
                 end
