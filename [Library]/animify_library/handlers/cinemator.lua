@@ -46,6 +46,9 @@ local imports = {
     showChat = showChat,
     getCamera = getCamera,
     setCameraMatrix = setCameraMatrix,
+    table = {
+        clone = table.clone
+    },
     string = {
         upper = string.upper
     }
@@ -193,9 +196,9 @@ local function renderCinemator(isFetchingInput, cbArguments)
                                         current = {0, 0, 0}
                                     }
                                 }
-                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current = cloneTableDatas(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial, false)
+                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current = imports.table.clone(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial, false)
                             else
-                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial = cloneTableDatas(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current, false)
+                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial = imports.table.clone(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current, false)
                             end
                         end
                         cursorRelX, cursorRelY = cursorRelX - prevCursorRel[1], cursorRelY - prevCursorRel[2]
