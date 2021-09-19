@@ -45,7 +45,10 @@ local imports = {
     Vector3 = Vector3,
     showChat = showChat,
     getCamera = getCamera,
-    setCameraMatrix = setCameraMatrix
+    setCameraMatrix = setCameraMatrix,
+    string = {
+        upper = string.upper
+    }
 }
 
 
@@ -145,6 +148,18 @@ local function renderCinemator(isFetchingInput, cbArguments)
                 end
             end
         end
+        for i, j in imports.ipairs(coreUI.viewportUI.labels) do
+            if not cinemationData.pedData.boneData then
+                beautify.setUIVisible(j.createdElement, false)
+            else
+                if j.labelType == "bone_id" then
+                    beautify.label.setText(j.createdElement, j.prefix..cinemationData.pedData.boneData.boneID)
+                elseif j.labelType == "axis_id" then
+                    beautify.label.setText(j.createdElement, j.prefix..((cinemationData.pedData.boneData.axisID and (imports.string.upper(cinemationData.pedData.boneData.axisID).." Axis")) or "-"))
+                end
+                beautify.setUIVisible(j.createdElement, true)
+            end
+        end
         imports.showChat(false)
         imports.setCameraMatrix(imports.unpack(cinemationData.pedData.cameraMatrix))
     else
@@ -185,7 +200,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
                         end
                         cursorRelX, cursorRelY = cursorRelX - prevCursorRel[1], cursorRelY - prevCursorRel[2]
                         local boneReference = cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)]
-                        local boneAxisID = cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
+                        local boneAxisID = availablePedBones[(cinemationData.pedData.boneData.boneID)].axes[(cinemationData.pedData.boneData.axisID)] or cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
                         boneReference.rotation.current[boneAxisID] = (boneReference.rotation.initial[boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
                     end
                 end

@@ -107,6 +107,19 @@ coreUI = {
                 sliderType = "camera_fov",
                 defaultPercent = 100
             }
+        },
+        labels = {
+            width = 200, height = 20,
+            marginY = 15, paddingX = 5, paddingY = 5,
+            color = {200, 200, 200, 255},
+            {
+                prefix = "SELECTED BONE:  ",
+                labelType = "bone_id"
+            },
+            {
+                prefix = "SELECTED AXIS:  ",
+                labelType = "axis_id"
+            }
         }
     }
 
@@ -178,14 +191,29 @@ function createCoreUI()
     end, coreUI.viewerUI.createdParent)
 
     -->> View Port UI <<--
+    coreUI.viewportUI.sliders.__endY = 0
     for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
-        j.createdElement = beautify.slider.create(CLIENT_MTA_RESOLUTION[1] - coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.marginY + ((coreUI.viewportUI.sliders.height + coreUI.viewportUI.sliders.paddingY)*(i - 1)), coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height, "horizontal", nil, false)
+        local viewport_slider_width, viewport_slider_height = coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height
+        local viewport_slider_startX, viewport_slider_startY = CLIENT_MTA_RESOLUTION[1] - viewport_slider_width, coreUI.viewportUI.sliders.marginY + ((viewport_slider_height + coreUI.viewportUI.sliders.paddingY)*(i - 1))
+        j.createdElement = beautify.slider.create(viewport_slider_startX, viewport_slider_startY, viewport_slider_width, viewport_slider_height, "horizontal", nil, false)
         beautify.slider.setText(j.createdElement, j.title)
         beautify.slider.setPercent(j.createdElement, j.defaultPercent)
         beautify.setUIVisible(j.createdElement, true)
+        if i == #coreUI.viewportUI.sliders then
+            coreUI.viewportUI.sliders.__endY = viewport_slider_startY + viewport_slider_height + coreUI.viewportUI.sliders.paddingY
+        end
+    end
+    for i, j in imports.ipairs(coreUI.viewportUI.labels) do
+        local viewport_label_width, viewport_label_height = coreUI.viewportUI.labels.width, coreUI.viewportUI.labels.height
+        local viewport_label_startX, viewport_label_startY = CLIENT_MTA_RESOLUTION[1] - viewport_label_width - coreUI.viewportUI.labels.paddingX, coreUI.viewportUI.sliders.__endY + coreUI.viewportUI.labels.marginY + ((viewport_label_height + coreUI.viewportUI.labels.paddingY)*(i - 1))
+        j.createdElement = beautify.label.create("", viewport_label_startX, viewport_label_startY, viewport_label_width, viewport_label_height, nil, false)
+        beautify.label.setColor(j.createdElement, coreUI.viewportUI.labels.color)
+        beautify.label.setHorizontalAlignment(j.createdElement, "right")
+        beautify.label.setVerticalAlignment(j.createdElement, "center")
+        beautify.setUIDisabled(j.createdElement, true)
+        beautify.setUIVisible(j.createdElement, true)
     end
     imports.showCursor(true)
-
     return true
 
 end
