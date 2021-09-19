@@ -72,7 +72,7 @@ local cinemationData = {
         size = 10,
         focussedColor = imports.tocolor(255, 255, 255, 255),
         unfocussedColor = imports.tocolor(255, 255, 255, 10),
-        bgPath = imports.dxCreateTexture(":beautify_library/files/assets/images/canvas/circle.rw", "argb", true, "clamp")
+        bgPath = beautify.assets["images"]["canvas/circle.rw"]
     },
     axisRings = {
         x = {

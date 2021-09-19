@@ -72,7 +72,7 @@ function initCinemator()
 
 end
 
-local circleTexture = dxCreateTexture(":beautify_library/files/assets/images/canvas/circle.rw", "argb", true, "clamp")
+local circleTexture = beautify.assets["images"]["canvas/circle.rw"]
 
 beautify.render.create(function()
 
