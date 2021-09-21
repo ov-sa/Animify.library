@@ -14,10 +14,12 @@
 -----------------
 
 local imports = {
+    type = type,
     ipairs = ipairs,
     tocolor = tocolor,
     isElement = isElement,
     destroyElement = destroyElement,
+    addEventHandler = addEventHandler,
     getInterpolationProgress = getInterpolationProgress,
     interpolateBetween = interpolateBetween,
     dxCreateFont = dxCreateFont,
@@ -89,6 +91,9 @@ function createOptUI(options)
     optUI.createdElements["__UI_CACHE__"]["Wrapper"]["Title Bar"]["Text"].text = options.title or ""
     for i, j in imports.ipairs(options) do
         local createdButton = beautify.button.create(j.title, 0, 0, "default", optUI.width, optUI.height, nil, false)
+        if j.execFunction and imports.type(j.execFunction) == "function" then
+            imports.addEventHandler("onClientUIClick", createdButton, j.execFunction)
+        end
         if i == 1 then
             beautify.render.create(function()
                 optUI.createdElements["__UI_CACHE__"]["Wrapper"].interpolationProgress = imports.getInterpolationProgress(optUI.createdElements["__UI_CACHE__"]["Wrapper"].tickCounter, optUI.wrapper.animDuration)

@@ -95,13 +95,16 @@ coreUI = {
                 optBinds = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
-                        title = "C R E A T E  A N I M A T I O N"
+                        title = "C R E A T E  A N I M A T I O N",
                     },
                     {
                         title = "C R E A T E  F R A M E"
                     },
                     {
-                        title = "C A N C E L"
+                        title = "C A N C E L",
+                        execFunction = function()
+                            destroyOptUI()
+                        end
                     }
                 }
             },
@@ -114,7 +117,10 @@ coreUI = {
                         title = "C O N F I R M"
                     },
                     {
-                        title = "R E J E C T"
+                        title = "R E J E C T",
+                        execFunction = function()
+                            destroyOptUI()
+                        end
                     }
                 }
             },
