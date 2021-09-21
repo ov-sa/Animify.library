@@ -16,10 +16,11 @@
 availableTemplates["beautify_gridlist"] = {
 
     ["ov-dark-theme"] = {
-        color = {0, 0, 0, 0},
+        color = {20, 20, 20, 255},
         columnBar = {
-            color = {20, 20, 20, 255},
-            fontColor = {175, 175, 175, 255},
+            font = {"files/assets/fonts/signika_semibold.rw", 11},
+            color = {200, 200, 200, 255},
+            fontColor = {0, 0, 0, 255},
             divider = {
                 color = {0, 0, 0, 255}
             }

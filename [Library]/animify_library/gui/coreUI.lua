@@ -16,11 +16,24 @@
 local imports = {
     ipairs = ipairs,
     tocolor = tocolor,
+    destroyElement = destroyElement,
+    isMouseOnPosition = isMouseOnPosition,
+    isMouseClicked = isMouseClicked,
+    getInterpolationProgress = getInterpolationProgress,
+    interpolateBetween = interpolateBetween,
     dxCreateFont = dxCreateFont,
+    dxCreateRenderTarget = dxCreateRenderTarget,
+    dxSetRenderTarget = dxSetRenderTarget,
+    dxSetBlendMode = dxSetBlendMode,
     dxCreateTexture = dxCreateTexture,
+    dxDrawRectangle = dxDrawRectangle,
     dxDrawImage = dxDrawImage,
     dxDrawText = dxDrawText,
-    showCursor = showCursor
+    dxGetTexturePixels = dxGetTexturePixels,
+    showCursor = showCursor,
+    math = {
+        max = math.max
+    }
 }
 
 
@@ -30,68 +43,10 @@ local imports = {
 
 coreUI = {
 
-    optionsUI = {
-        createdParent = false,
-        paddingX = 5, paddingY = 5, borderPadding = 10,
-        width = 260,
-        banner = {
-            text = "O   P   T   I   O   N   S",
-            marginY = 3,
-            width = 0, height = 60,
-            font = imports.dxCreateFont("files/assets/fonts/impact.ttf", 20),
-            fontColor = imports.tocolor(175, 175, 175, 255),
-            bgPath = imports.dxCreateTexture("files/assets/images/banners/ov.png", "argb", true, "clamp")
-        },
-        options = {
-            marginY = 5, paddingY = 8,
-            height = 24,
-            {
-                title = "CREATE FRAME"
-            },
-            {
-                title = "CREATE ANIMATION"
-            },
-            {
-                title = "EDIT FRAME/ANIMATION"
-            },
-            {
-                title = "DELETE FRAME/ANIMATION"
-            },
-            {
-                title = "EXPORT ANIMATION"
-            },
-            {
-                title = "IMPORT/EXPORT IFP"
-            }
-        }
-    },
-
-    viewerUI = {
-        createdParent = false,
-        marginY = 5, paddingX = 0, paddingY = 5, borderPadding = 10,
-        width = 260, height = 400,
-        banner = {
-            text = "V   I   E   W   E   R",
-            marginY = 3,
-            width = 0, height = 60
-        },
-        decks = {
-            height = 165,
-            {
-                title = "VIEW FRAMES",
-                deckType = "view_frames"
-            },
-            {
-                title = "VIEW ANIMATIONS",
-                deckType = "view_animations"
-            }
-        }
-    },
-
     viewportUI = {
         sliders = {
-            width = 200, height = 24,
             marginY = 5, paddingY = 5,
+            width = 200, height = 24,
             {
                 title = "PED ROTATION",
                 sliderType = "ped_rotation",
@@ -109,8 +64,8 @@ coreUI = {
             }
         },
         labels = {
+            marginY = 20, paddingX = 5, paddingY = 5,
             width = 200, height = 20,
-            marginY = 15, paddingX = 5, paddingY = 5,
             color = {200, 200, 200, 255},
             {
                 prefix = "SELECTED BONE:  ",
@@ -121,14 +76,84 @@ coreUI = {
                 labelType = "axis_id"
             }
         }
+    },
+
+    optionsUI = {
+        startX = CLIENT_MTA_RESOLUTION[1] - 5, startY = 0,
+        width = 42, height = 375,
+        color = imports.tocolor(0, 0, 0, 255),
+        renderTexture = false,
+        options = {
+            marginY = 30,
+            size = 25,
+            color = {255, 255, 255, 255},
+            hoverAnimDuration = 1250,
+            selectedOption = false,
+            {
+                optionType = "create",
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/create.png", "argb", true, "clamp"),
+                optBinds = {
+                    title = "S  E  L  E  C  T    T  A  S  K",
+                    {
+                        title = "C R E A T E  A N I M A T I O N"
+                    },
+                    {
+                        title = "C R E A T E  F R A M E"
+                    },
+                    {
+                        title = "C A N C E L"
+                    }
+                }
+            },
+            {
+                optionType = "edit",
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/edit.png", "argb", true, "clamp"),
+                optBinds = {
+                    title = "E  D  I  T    F  R  A  M  E",
+                    {
+                        title = "C O N F I R M"
+                    },
+                    {
+                        title = "R E J E C T"
+                    }
+                }
+            },
+            {
+                optionType = "delete",
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/delete.png", "argb", true, "clamp")
+            },
+            {
+                optionType = "import",
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/import.png", "argb", true, "clamp")
+            },
+            {
+                text = "EXPORT",
+                optionType = "export",
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/export.png", "argb", true, "clamp")
+            }
+        }
+    },
+
+    viewerUI = {
+        borderPadding = 10,
+        startX = 3, startY = 0,
+        width = 230, height = 580,
+        gridlists = {
+            paddingY = 5,
+            {
+                title = "F R A M E  -  I D",
+                prefix = "FRAME #",
+                gridType = "view_frames"
+            },
+            {
+                title = "A N I M  -  I D",
+                prefix = "ANIM #",
+                gridType = "view_animations"
+            }
+        }
     }
 
 }
-coreUI.viewerUI.paddingX = coreUI.optionsUI.paddingX + coreUI.viewerUI.paddingX
-coreUI.viewerUI.height = (coreUI.viewerUI.banner.marginY*2) + coreUI.viewerUI.banner.height + coreUI.viewerUI.height
-coreUI.viewerUI.banner.font = coreUI.optionsUI.banner.font 
-coreUI.viewerUI.banner.fontColor = coreUI.optionsUI.banner.fontColor
-coreUI.viewerUI.banner.bgPath = coreUI.optionsUI.banner.bgPath
 
 
 -----------------------------------
@@ -137,60 +162,7 @@ coreUI.viewerUI.banner.bgPath = coreUI.optionsUI.banner.bgPath
 
 function createCoreUI()
 
-    -->> Options UI <<--
-    coreUI.optionsUI.__endY = (coreUI.optionsUI.banner.marginY*2) + coreUI.optionsUI.banner.height + (coreUI.optionsUI.options.marginY*2) + (coreUI.optionsUI.options.height*math.max(0, #coreUI.optionsUI.options)) + (coreUI.optionsUI.options.paddingY*math.max(0, #coreUI.optionsUI.options - 1))
-    coreUI.optionsUI.createdParent = beautify.card.create(coreUI.optionsUI.paddingX, coreUI.optionsUI.paddingY, coreUI.optionsUI.width, coreUI.optionsUI.__endY, nil, false)
-    coreUI.optionsUI.__endY = coreUI.optionsUI.paddingY + coreUI.optionsUI.__endY + coreUI.optionsUI.borderPadding
-    for i, j in imports.ipairs(coreUI.optionsUI.options) do
-        local options_button = beautify.button.create(j.title, 0, (coreUI.optionsUI.banner.marginY*2) + coreUI.optionsUI.banner.height + coreUI.optionsUI.options.marginY + (coreUI.optionsUI.options.height + coreUI.optionsUI.options.paddingY)*(i - 1), "default", coreUI.optionsUI.width, coreUI.optionsUI.options.height, coreUI.optionsUI.createdParent, false)
-        beautify.setUIVisible(options_button, true)
-    end
-    beautify.setUIVisible(coreUI.optionsUI.createdParent, true)
-    beautify.render.create(function()
-        imports.dxDrawImage(0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.bgPath, 0, 0, 0, -1, false)
-        imports.dxDrawText(coreUI.optionsUI.banner.text, 0, coreUI.optionsUI.banner.marginY, coreUI.optionsUI.width, coreUI.optionsUI.banner.marginY + coreUI.optionsUI.banner.height, coreUI.optionsUI.banner.fontColor, 1, coreUI.optionsUI.banner.font, "center", "center", true, false, false, false)
-    end, coreUI.optionsUI.createdParent)
-
-    -->> Viewer UI <<--
-    coreUI.viewerUI.__endY = coreUI.optionsUI.__endY + coreUI.viewerUI.paddingY
-    coreUI.viewerUI.createdParent = beautify.card.create(coreUI.viewerUI.paddingX, coreUI.viewerUI.__endY, coreUI.viewerUI.width, coreUI.viewerUI.height, nil, false)
-    coreUI.viewerUI.__endY = coreUI.viewerUI.__endY + coreUI.viewerUI.height + coreUI.viewerUI.borderPadding
-    beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
-    local viewer_deckpane_startX, viewer_deckpane_startY = 0, (coreUI.viewerUI.banner.marginY*2) + coreUI.viewerUI.marginY + coreUI.viewerUI.banner.height
-    local viewer_deckpane = beautify.deckpane.create(0, viewer_deckpane_startY, coreUI.viewerUI.width, coreUI.viewerUI.height - viewer_deckpane_startY, coreUI.viewerUI.createdParent, false)
-    for i, j in imports.ipairs(coreUI.viewerUI.decks) do
-        local viewer_deck = beautify.deck.create(j.title, coreUI.viewerUI.decks.height, viewer_deckpane, false)
-        if j.deckType == "view_frames" then
-            local viewer_gridlist_width = coreUI.viewerUI.width - 10
-            local createdGridlist = beautify.gridlist.create(0, 0, viewer_gridlist_width, coreUI.viewerUI.decks.height, viewer_deck, false)
-            beautify.gridlist.addColumn(createdGridlist, "FRAME ID", viewer_gridlist_width)        
-            for x = 1, 500, 1 do
-                local rowIndex = beautify.gridlist.addRow(createdGridlist)
-                beautify.gridlist.setRowData(createdGridlist, rowIndex, 1, "FRAME #"..tostring(beautify.gridlist.countRows(createdGridlist)))
-            end
-            beautify.gridlist.setSelection(createdGridlist, 1)
-            beautify.setUIVisible(createdGridlist, true)
-        elseif j.deckType == "view_animations" then
-            local viewer_gridlist_width = coreUI.viewerUI.width - 10
-            local createdGridlist = beautify.gridlist.create(0, 0, viewer_gridlist_width, coreUI.viewerUI.decks.height, viewer_deck, false)
-            beautify.gridlist.addColumn(createdGridlist, "ANIMATION ID", viewer_gridlist_width)        
-            for x = 1, 500, 1 do
-                local rowIndex = beautify.gridlist.addRow(createdGridlist)
-                beautify.gridlist.setRowData(createdGridlist, rowIndex, 1, "ANIMATION #"..tostring(beautify.gridlist.countRows(createdGridlist)))
-            end
-            beautify.gridlist.setSelection(createdGridlist, 1)
-            beautify.setUIVisible(createdGridlist, true)
-        end
-        j.createdElement = viewer_deck
-        beautify.setUIVisible(viewer_deck, true)
-    end
-    beautify.setUIVisible(viewer_deckpane, true)
-    beautify.render.create(function()
-        imports.dxDrawImage(0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.bgPath, 0, 0, 0, -1, false)
-        imports.dxDrawText(coreUI.viewerUI.banner.text, 0, coreUI.viewerUI.banner.marginY, coreUI.viewerUI.width, coreUI.viewerUI.banner.marginY + coreUI.viewerUI.banner.height, coreUI.viewerUI.banner.fontColor, 1, coreUI.viewerUI.banner.font, "center", "center", true, false, false, false)
-    end, coreUI.viewerUI.createdParent)
-
-    -->> View Port UI <<--
+    -->> View-Port UI <<--
     coreUI.viewportUI.sliders.__endY = 0
     for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
         local viewport_slider_width, viewport_slider_height = coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height
@@ -203,6 +175,7 @@ function createCoreUI()
             coreUI.viewportUI.sliders.__endY = viewport_slider_startY + viewport_slider_height + coreUI.viewportUI.sliders.paddingY
         end
     end
+    coreUI.viewportUI.labels.__endY = coreUI.viewportUI.sliders.__endY
     for i, j in imports.ipairs(coreUI.viewportUI.labels) do
         local viewport_label_width, viewport_label_height = coreUI.viewportUI.labels.width, coreUI.viewportUI.labels.height
         local viewport_label_startX, viewport_label_startY = CLIENT_MTA_RESOLUTION[1] - viewport_label_width - coreUI.viewportUI.labels.paddingX, coreUI.viewportUI.sliders.__endY + coreUI.viewportUI.labels.marginY + ((viewport_label_height + coreUI.viewportUI.labels.paddingY)*(i - 1))
@@ -212,7 +185,110 @@ function createCoreUI()
         beautify.label.setVerticalAlignment(j.createdElement, "center")
         beautify.setUIDisabled(j.createdElement, true)
         beautify.setUIVisible(j.createdElement, true)
+        if i == #coreUI.viewportUI.labels then
+            coreUI.viewportUI.labels.__endY = viewport_label_startY + viewport_label_height + coreUI.viewportUI.labels.paddingY
+        end
     end
+
+    -->> Options UI <<--
+    coreUI.optionsUI.startX, coreUI.optionsUI.startY = coreUI.optionsUI.startX - coreUI.optionsUI.width, coreUI.viewportUI.labels.__endY + coreUI.optionsUI.startY
+    local option_paddingX, options_paddingY = (coreUI.optionsUI.width - coreUI.optionsUI.options.size)*0.5, ((coreUI.optionsUI.height - coreUI.optionsUI.options.marginY) - (#coreUI.optionsUI.options*coreUI.optionsUI.options.size))/(#coreUI.optionsUI.options + 1)
+    for i, j in imports.ipairs(coreUI.optionsUI.options) do
+        j.startX = option_paddingX
+        j.startY = (coreUI.optionsUI.options.marginY*0.5) + ((coreUI.optionsUI.options.size + options_paddingY)*(i - 1)) + options_paddingY
+        j["__UI_CACHE__"] = {
+            animAlphaPercent = 0.25,
+            hoverStatus = "backward",
+            hoverAnimTickCounter = CLIENT_CURRENT_TICK
+        }
+    end
+    beautify.render.create(function()
+        if not coreUI.optionsUI.renderTexture then
+            if not coreUI.optionsUI.renderTarget then
+                coreUI.optionsUI.renderTarget = imports.dxCreateRenderTarget(coreUI.optionsUI.width, coreUI.optionsUI.height, true)
+            end
+            imports.dxSetRenderTarget(coreUI.optionsUI.renderTarget, true)
+            imports.dxSetBlendMode("modulate_add")
+            imports.dxDrawImage(0, 0, coreUI.optionsUI.width, coreUI.optionsUI.width, beautify.assets["images"]["curved_square/regular/left.rw"], 90, 0, 0, -1, false)
+            imports.dxDrawRectangle(0, coreUI.optionsUI.width, coreUI.optionsUI.width, coreUI.optionsUI.height - (coreUI.optionsUI.width*2), -1, false)
+            imports.dxDrawImage(0, coreUI.optionsUI.height - coreUI.optionsUI.width, coreUI.optionsUI.width, coreUI.optionsUI.width, beautify.assets["images"]["curved_square/regular/left.rw"], -90, 0, 0, -1, false)
+            imports.dxSetRenderTarget()
+            local renderPixels = imports.dxGetTexturePixels(coreUI.optionsUI.renderTarget)
+            if renderPixels then
+                coreUI.optionsUI.renderTexture = imports.dxCreateTexture(renderPixels, "argb", false, "clamp")
+                imports.destroyElement(coreUI.optionsUI.renderTarget)
+                coreUI.optionsUI.renderTarget = nil
+            end
+        end
+        if coreUI.optionsUI.renderTexture then
+            imports.dxDrawImage(coreUI.optionsUI.startX, coreUI.optionsUI.startY, coreUI.optionsUI.width, coreUI.optionsUI.height, coreUI.optionsUI.renderTexture, 0, 0, 0, coreUI.optionsUI.color, false)
+            coreUI.optionsUI.options.hoveredOption = false
+            for i, j in imports.ipairs(coreUI.optionsUI.options) do                
+                local option_startX, option_startY = coreUI.optionsUI.startX + j.startX, coreUI.optionsUI.startY + j.startY
+                local isOptionSelected = coreUI.optionsUI.options.selectedOption == i
+                local isOptionHovered = imports.isMouseOnPosition(option_startX, option_startY, coreUI.optionsUI.options.size, coreUI.optionsUI.options.size)
+                if isOptionSelected or isOptionHovered then
+                    if isOptionHovered then
+                        coreUI.optionsUI.options.hoveredOption = i
+                    end
+                    if j["__UI_CACHE__"].hoverStatus ~= "forward" then
+                        j["__UI_CACHE__"].hoverStatus = "forward"
+                        j["__UI_CACHE__"].hoverAnimTickCounter = CLIENT_CURRENT_TICK
+                    end
+                else
+                    if j["__UI_CACHE__"].hoverStatus ~= "backward" then
+                        j["__UI_CACHE__"].hoverStatus = "backward"
+                        j["__UI_CACHE__"].hoverAnimTickCounter = CLIENT_CURRENT_TICK
+                    end
+                end
+                j["__UI_CACHE__"].interpolationProgress = imports.getInterpolationProgress(j["__UI_CACHE__"].hoverAnimTickCounter, coreUI.optionsUI.options.hoverAnimDuration)
+                if (j["__UI_CACHE__"].interpolationProgress < 1) or CLIENT_MTA_RESTORED then
+                    if j["__UI_CACHE__"].hoverStatus == "forward" then
+                        j["__UI_CACHE__"].animAlphaPercent = imports.interpolateBetween(j["__UI_CACHE__"].animAlphaPercent, 0, 0, 1, 0, 0, j["__UI_CACHE__"].interpolationProgress, "InQuad")
+                    else
+                        j["__UI_CACHE__"].animAlphaPercent = imports.interpolateBetween(j["__UI_CACHE__"].animAlphaPercent, 0, 0, 0.25, 0, 0, j["__UI_CACHE__"].interpolationProgress, "InQuad")
+                    end
+                end
+                imports.dxDrawImage(option_startX, option_startY, coreUI.optionsUI.options.size, coreUI.optionsUI.options.size, j.iconPath, 0, 0, 0, imports.tocolor(coreUI.optionsUI.options.color[1], coreUI.optionsUI.options.color[2], coreUI.optionsUI.options.color[3], coreUI.optionsUI.options.color[4]*j["__UI_CACHE__"].animAlphaPercent), false)
+            end
+        end
+    end)
+    beautify.render.create(function()
+        if coreUI.optionsUI.options.hoveredOption then
+            local isMouseKeyClicked = imports.isMouseClicked()
+            if isMouseKeyClicked and (isMouseKeyClicked == "mouse1") and (coreUI.optionsUI.options.selectedOption ~= coreUI.optionsUI.options.hoveredOption) then
+                coreUI.optionsUI.options.selectedOption = coreUI.optionsUI.options.hoveredOption
+                local optionReference = coreUI.optionsUI.options[(coreUI.optionsUI.options.hoveredOption)]
+                if optionReference.optBinds then
+                    createOptUI(optionReference.optBinds)
+                else
+                    destroyOptUI()
+                end
+                --[[
+                if optionReference.optionType == "create" then
+                elseif optionReference.optionType == "edit" then
+                elseif optionReference.optionType == "delete" then
+                end]]
+            end
+        end
+    end, {
+        renderType = "input"
+    })
+
+    -->> Viewer UI <<--
+    coreUI.viewerUI.startX, coreUI.viewerUI.startY = coreUI.optionsUI.startX - coreUI.viewerUI.startX - (coreUI.viewerUI.width + coreUI.viewerUI.borderPadding), coreUI.optionsUI.startY
+    coreUI.viewerUI.createdParent = beautify.card.create(coreUI.viewerUI.startX, coreUI.viewerUI.startY, coreUI.viewerUI.width, coreUI.viewerUI.height, nil, false)
+    local viewer_gridlist_height = (coreUI.viewerUI.height - (coreUI.viewerUI.gridlists.paddingY*imports.math.max(#coreUI.viewerUI.gridlists - 1, 0)))/imports.math.max(#coreUI.viewerUI.gridlists, 1)
+    for i, j in imports.ipairs(coreUI.viewerUI.gridlists) do
+        j.createdElement = beautify.gridlist.create(0, (viewer_gridlist_height + coreUI.viewerUI.gridlists.paddingY)*(i - 1), coreUI.viewerUI.width, viewer_gridlist_height, coreUI.viewerUI.createdParent, false)
+        beautify.gridlist.addColumn(j.createdElement, j.title, coreUI.viewerUI.width)
+        for x = 1, 500, 1 do
+            local rowIndex = beautify.gridlist.addRow(j.createdElement)
+            beautify.gridlist.setRowData(j.createdElement, rowIndex, 1, j.prefix..tostring(beautify.gridlist.countRows(j.createdElement)))
+        end
+        beautify.setUIVisible(j.createdElement, true)
+    end
+    beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
     imports.showCursor(true)
     return true
 

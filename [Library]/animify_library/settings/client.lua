@@ -15,9 +15,11 @@
 ------------------
 
 availablePedBones = {
+    --[[
+    --TODO: Make all axis rotation relative to the Root Bone (Better)
     [0] = {
         axes = {x = "y", y = "z", z = "x"}
-    },
+    },]]
     [1] = {
         axes = {x = "y", y = "x"}
     },

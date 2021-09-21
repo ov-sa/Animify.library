@@ -43,6 +43,7 @@ local imports = {
     dxDrawImage = dxDrawImage,
     engineApplyShaderToWorldTexture = engineApplyShaderToWorldTexture,
     Vector3 = Vector3,
+    setPlayerHudComponentVisible = setPlayerHudComponentVisible,
     showChat = showChat,
     getCamera = getCamera,
     setCameraMatrix = setCameraMatrix,
@@ -110,9 +111,9 @@ local function renderPedBones()
 
 end
 
-local function renderCinemator(isFetchingInput, cbArguments)
+local function renderCinemator(renderData, cbArguments)
 
-    if not isFetchingInput then
+    if renderData.renderType ~= "input" then
         local indicatorRadius = cinemationData.boneIndicator.size*0.5
         local _, _, pedRotation = imports.getElementRotation(cinemationData.pedData.createdPed)
         for i, j in imports.pairs(availablePedBones) do
@@ -163,6 +164,7 @@ local function renderCinemator(isFetchingInput, cbArguments)
                 beautify.setUIVisible(j.createdElement, true)
             end
         end
+        imports.setPlayerHudComponentVisible("all", false)
         imports.showChat(false)
         imports.setCameraMatrix(imports.unpack(cinemationData.pedData.cameraMatrix))
     else
@@ -246,8 +248,10 @@ function initCinemator()
             end
         end
     end
-    beautify.render.create(renderCinemator, nil, true)
     beautify.render.create(renderCinemator)
+    beautify.render.create(renderCinemator, {
+        renderType = "input"
+    })
     imports.addEventHandler("onClientPedsProcessed", root, renderPedBones)
     return true
 

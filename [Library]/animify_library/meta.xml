@@ -25,7 +25,7 @@
 
     <!-- GUIs -->
     <script src="gui/coreUI.lua" type="client" cache="false"/>
-    <!--script src="gui/hintUI.lua" type="client" cache="false"/-->
+    <script src="gui/optUI.lua" type="client" cache="false"/>
 
     <!-- Handlers -->
     <script src="handlers/modelLoader.lua" type="client" cache="false"/>
@@ -33,10 +33,18 @@
     <script src="handlers/initial.lua" type="client" cache="false"/>
 
     <!-- Files: Assets: Fonts -->
-    <file src="files/assets/fonts/impact.ttf"/>
+    <file src="files/assets/fonts/impact.rw"/>
+    <file src="files/assets/fonts/teko_regular.rw"/>
+    <file src="files/assets/fonts/teko_medium.rw"/>
+    <file src="files/assets/fonts/signika_semibold.rw"/>
+    <file src="files/assets/fonts/poppins_medium.rw"/>
 
     <!-- Files: Assets: Images -->
-    <file src="files/assets/images/banners/ov.png"/>
+    <file src="files/assets/images/icons/create.png"/>
+    <file src="files/assets/images/icons/delete.png"/>
+    <file src="files/assets/images/icons/edit.png"/>
+    <file src="files/assets/images/icons/export.png"/>
+    <file src="files/assets/images/icons/import.png"/>
 
     <!-- Files: Assets: Models -->
     <file src="files/assets/models/ring/ring.dff"/>
