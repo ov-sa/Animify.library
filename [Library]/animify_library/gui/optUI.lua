@@ -97,7 +97,8 @@ function createOptUI(options)
         if i == 1 then
             beautify.render.create(function()
                 optUI.createdElements["__UI_CACHE__"]["Wrapper"].interpolationProgress = imports.getInterpolationProgress(optUI.createdElements["__UI_CACHE__"]["Wrapper"].tickCounter, optUI.wrapper.animDuration)
-                if (optUI.createdElements["__UI_CACHE__"]["Wrapper"].interpolationProgress <= 2) or CLIENT_MTA_RESTORED then
+                local isInterpolating = optUI.createdElements["__UI_CACHE__"]["Wrapper"].interpolationProgress <= 2
+                if isInterpolating or CLIENT_MTA_RESTORED then
                     if optUI.createdElements["__UI_CACHE__"]["Wrapper"].animStatus == "forward" then
                         optUI.createdElements["__UI_CACHE__"]["Wrapper"].offsetX, optUI.createdElements["__UI_CACHE__"]["Wrapper"].offsetY = imports.interpolateBetween(-optUI.createdElements["__UI_CACHE__"]["Wrapper"].width*1.5, CLIENT_MTA_RESOLUTION[2]*0.25, 0, optUI.createdElements["__UI_CACHE__"]["Wrapper"].startX, optUI.createdElements["__UI_CACHE__"]["Wrapper"].startY, 0, optUI.createdElements["__UI_CACHE__"]["Wrapper"].interpolationProgress, "OutBack")
                     elseif optUI.createdElements["__UI_CACHE__"]["Wrapper"].animStatus == "backward" then
@@ -114,6 +115,7 @@ function createOptUI(options)
                 optUI.createdElements["__UI_CACHE__"]["Wrapper"]["Title Bar"]["Text"].endY = optUI.createdElements["__UI_CACHE__"]["Wrapper"]["Title Bar"].startY + optUI.createdElements["__UI_CACHE__"]["Wrapper"]["Title Bar"].height                
                 for i, j in imports.ipairs(optUI.createdElements) do
                     if j and imports.isElement(j) then
+                        beautify.setUIDisabled(j, isInterpolating)
                         beautify.setUIPosition(j, optUI.createdElements["__UI_CACHE__"]["Wrapper"].offsetX + optUI.wrapper.padding, optUI.createdElements["__UI_CACHE__"]["Wrapper"].offsetY + optUI.wrapper.padding + ((optUI.height + optUI.paddingY)*(i - 1)))
                     end
                 end
