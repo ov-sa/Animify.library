@@ -38,6 +38,7 @@ local imports = {
     getPedBonePosition = getPedBonePosition,
     updateElementRpHAnim = updateElementRpHAnim,
     getScreenFromWorldPosition = getScreenFromWorldPosition,
+    getWorldFromScreenPosition = getWorldFromScreenPosition,
     processLineOfSight = processLineOfSight,
     dxCreateTexture = dxCreateTexture,
     dxCreateShader = dxCreateShader,
@@ -51,6 +52,11 @@ local imports = {
     setCameraMatrix = setCameraMatrix,
     table = {
         clone = table.clone
+    },
+    math = {
+        sin = math.sin,
+        cos = math.cos,
+        rad = math.rad
     },
     string = {
         upper = string.upper
@@ -66,13 +72,18 @@ local prevMouseKeyClickState = false
 local prevCursorRel = false
 local cinemationData = {
     frameData = false,
+    isPlayingAnim = false,
+    cameraData = {
+        fov = 80,
+        radius = 3.25,
+        position = {0, 0, 0}
+    },
     pedData = {
         createdPed = false,
         boneData = false,
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
-        rotation = 90,
-        cameraMatrix = {1480.912963867188, -1466.779541015625, 40.06010055541992, 1481.8369140625, -1466.725463867188, 40.23865585327148, 0, 80}
+        rotation = 90
     },
     boneIndicator = {
         size = 10,
@@ -106,7 +117,7 @@ local cinemationData = {
 
 local function renderPedBones()
 
-    if not cinemationData.frameData then return false end
+    if not cinemationData.frameData or cinemationData.isPlayingAnim then return false end
 
     for i, j in imports.pairs(cinemationData.frameData["Bones"]) do
         imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
@@ -133,7 +144,7 @@ local function renderCinemator(renderData, cbArguments)
             end
             local indicatorX, indicatorY = imports.getScreenFromWorldPosition(bonePosVector)
             if indicatorX and indicatorY then
-                if cinemationData.frameData and not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
+                if cinemationData.frameData and not cinemationData.isPlayingAnim and not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
                     if prevMouseKeyClickState == "mouse1" then
                         cinemationData.pedData.boneData = {
                             boneID = i,
@@ -151,8 +162,11 @@ local function renderCinemator(renderData, cbArguments)
                 sliderPercent = sliderPercent/100
                 if j.sliderType == "ped_rotation" then
                     imports.setElementRotation(cinemationData.pedData.createdPed, 0, 0, sliderPercent*360)
+                elseif j.sliderType == "camera_rotation" then
+                    cinemationData.cameraData.rotation = imports.math.rad(sliderPercent*360)
+                    cinemationData.cameraData.position[1], cinemationData.cameraData.position[2], cinemationData.cameraData.position[3] = cinemationData.pedData.position[1] + (cinemationData.cameraData.radius*imports.math.cos(cinemationData.cameraData.rotation)), cinemationData.pedData.position[2] + (cinemationData.cameraData.radius*imports.math.sin(cinemationData.cameraData.rotation)), cinemationData.pedData.position[3]
                 elseif j.sliderType == "camera_fov" then
-                    cinemationData.pedData.cameraMatrix[8] = 40 + (sliderPercent*40)
+                    cinemationData.cameraData.fov = 40 + (sliderPercent*40)
                 end
             end
         end
@@ -170,13 +184,13 @@ local function renderCinemator(renderData, cbArguments)
         end
         imports.setPlayerHudComponentVisible("all", false)
         imports.showChat(false)
-        imports.setCameraMatrix(imports.unpack(cinemationData.pedData.cameraMatrix))
+        imports.setCameraMatrix(cinemationData.cameraData.position[1], cinemationData.cameraData.position[2], cinemationData.cameraData.position[3], cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], 0, cinemationData.cameraData.fov)
     else
         local isMouseKeyClicked = imports.isMouseClicked()
         local isLMBOnHold = (isMouseKeyClicked ~= "mouse1") and imports.isKeyOnHold("mouse1")
         prevMouseKeyClickState = isMouseKeyClicked
         local focussedAxis = false
-        if cinemationData.frameData and cinemationData.pedData.boneData then
+        if cinemationData.frameData and not cinemationData.isPlayingAnim and cinemationData.pedData.boneData then
             if isMouseKeyClicked == "mouse2" then
                 cinemationData.pedData.boneData = false
                 prevCursorRel = false
@@ -185,7 +199,7 @@ local function renderCinemator(renderData, cbArguments)
                     local cursorX, cursorY = imports.getAbsoluteCursorPosition()
                     local cameraDistance = imports.Vector3(imports.getElementPosition(imports.camera)) - imports.Vector3(imports.getElementPosition(cinemationData.pedData.createdPed))
                     cameraDistance = cameraDistance.length + 2
-                    local sightData = {imports.processLineOfSight(imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
+                    local sightData = {imports.processLineOfSight(imports.Vector3(imports.getWorldFromScreenPosition(cursorX, cursorY, 0)), imports.Vector3(imports.getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
                     if sightData[1] and sightData[5] then
                         focussedAxis = sightData[5]
                     end
@@ -195,13 +209,13 @@ local function renderCinemator(renderData, cbArguments)
                         local cursorRelX, cursorRelY = imports.getCursorPosition()
                         if not prevCursorRel then
                             prevCursorRel = {cursorRelX, cursorRelY}
+                            if not cinemationData.frameData["__EDITOR_CACHE__"] then
+                                cinemationData.frameData["__EDITOR_CACHE__"] = {}
+                            end
+                            if not cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] then
+                                cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
+                            end
                             if not cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)] then
-                                if not cinemationData.frameData["__EDITOR_CACHE__"] then
-                                    cinemationData.frameData["__EDITOR_CACHE__"] = {}
-                                end
-                                if not cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] then
-                                    cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
-                                end
                                 cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)] = imports.table.clone(cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)], false)
                             else
                                 cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] = imports.table.clone(cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)], false)
@@ -266,6 +280,61 @@ function initCinemator()
         end
         cinemationData.frameData = false
     end)
+    
+    ---TODO: EXPERIMENTAL---
+    testPED = cinemationData.pedData.createdPed
     return true
 
 end
+
+
+
+---TODO: EXPERIMENTAL---
+testPED = cinemationData.pedData.createdPed
+function playAnim()
+
+    local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+    local animCache = getAnimCache(selectedAnim)
+    if not animCache or (#animCache["Frames"] <= 0) then return false end
+
+    cinemationData.pedData.boneData = false
+    cinemationData.isPlayingAnim = {
+        animCache = animCache,
+        currentFrame = 1,
+        duration = 700,
+        tickCounter = CLIENT_CURRENT_TICK
+    }
+    outputChatBox("PLAYING ANIM??")
+
+end
+
+imports.addEventHandler("onClientPedsProcessed", root, function()
+
+    if not cinemationData.isPlayingAnim then return false end
+
+    local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+    local animCache = getAnimCache(selectedAnim)
+    if not animCache or (#animCache["Frames"] <= 0) then return false end
+
+    local currentFrameReference = animCache["Frames"][(cinemationData.isPlayingAnim.currentFrame)]
+    local nextFrameReference = animCache["Frames"][(cinemationData.isPlayingAnim.currentFrame + 1)]
+    if not currentFrameReference or not nextFrameReference then
+        cinemationData.isPlayingAnim = false
+        return false
+    end
+
+    cinemationData.isPlayingAnim.interpolationProgress = getInterpolationProgress(cinemationData.isPlayingAnim.tickCounter, cinemationData.isPlayingAnim.duration)
+    for i, j in pairs(availablePedBones) do
+        local currentDefaultRot = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, i)}
+        local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i] , (nextFrameReference and nextFrameReference["Bones"][i])
+        local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
+        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
+    end
+    if cinemationData.isPlayingAnim.interpolationProgress >= 1 then
+        cinemationData.isPlayingAnim.currentFrame = cinemationData.isPlayingAnim.currentFrame + 1
+        cinemationData.isPlayingAnim.tickCounter = CLIENT_CURRENT_TICK
+    end
+    imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
+
+end)
+bindKey("z", "down", function() playAnim() end)

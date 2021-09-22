@@ -69,8 +69,13 @@ function addAnimFrame(animIndex)
 
     if not animIndex or not cache["Animations"][animIndex] then return false end
 
+    local boneData = {}
+    for i, j in pairs(availablePedBones) do
+        --TODO: REMOVE LATER..
+        boneData[i] = {getElementBoneRotation(testPED, i)}
+    end
     imports.table.insert(cache["Animations"][animIndex]["Frames"], {
-        ["Bones"] = {}
+        ["Bones"] = boneData
     })
     return #cache["Animations"][animIndex]["Frames"]
 

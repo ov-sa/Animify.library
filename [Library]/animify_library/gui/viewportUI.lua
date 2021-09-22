@@ -37,12 +37,12 @@ viewportUI = {
         {
             title = "CAMERA ROTATION",
             sliderType = "camera_rotation",
-            defaultPercent = 100
+            defaultPercent = 34
         },
         {
             title = "CAMERA FOV",
             sliderType = "camera_fov",
-            defaultPercent = 100
+            defaultPercent = 60
         }
     },
 
