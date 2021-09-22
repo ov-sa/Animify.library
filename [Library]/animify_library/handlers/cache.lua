@@ -60,15 +60,15 @@ function addAnimFrame(animIndex)
 
     if not animIndex or not cache["Animations"][animIndex] then return false end
 
-    imports.table.insert(cache["Animations"][animIndex]["Frame"], {})
-    return #cache["Animations"][animIndex]["Frame"]
+    imports.table.insert(cache["Animations"][animIndex]["Frames"], {})
+    return #cache["Animations"][animIndex]["Frames"]
 
 end
 
 function removeAnimFrame(animIndex, frameIndex)
 
-    if not animIndex or not frameIndex or not cache["Animations"][animIndex] or not cache["Animations"][animIndex]["Frame"][frameIndex] then return false end
+    if not animIndex or not frameIndex or not cache["Animations"][animIndex] or not cache["Animations"][animIndex]["Frames"][frameIndex] then return false end
 
-    return imports.table.remove(cache["Animations"][animIndex]["Frame"], frameIndex)
+    return imports.table.remove(cache["Animations"][animIndex]["Frames"], frameIndex)
 
 end

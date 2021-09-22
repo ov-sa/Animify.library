@@ -68,8 +68,14 @@ coreUI = {
                         title = "C R E A T E  F R A M E",
                         mandatorySelection = "view_animations",
                         execFunction = function()
-                            local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
-                            beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..tostring(beautify.gridlist.countRows(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)))
+                            local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+                            if selectedAnim then
+                                local frameIndex = addAnimFrame(selectedAnim)
+                                if frameIndex then
+                                    local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                                    beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..frameIndex)
+                                end
+                            end
                             destroyOptUI()
                             selectCoreOption(false)
                         end
