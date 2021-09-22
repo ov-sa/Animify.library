@@ -157,7 +157,7 @@ local function renderCinemator(renderData, cbArguments)
                 beautify.setUIVisible(j.createdElement, false)
             else
                 if j.labelType == "bone_id" then
-                    beautify.label.setText(j.createdElement, j.prefix..cinemationData.pedData.boneData.boneID)
+                    beautify.label.setText(j.createdElement, j.prefix..cinemationData.pedData.boneData.boneID.." | ("..availablePedBones[(cinemationData.pedData.boneData.boneID)].name..")")
                 elseif j.labelType == "axis_id" then
                     beautify.label.setText(j.createdElement, j.prefix..((cinemationData.pedData.boneData.axisID and (imports.string.upper(cinemationData.pedData.boneData.axisID).." Axis")) or "-"))
                 end

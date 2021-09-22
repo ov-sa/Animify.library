@@ -65,7 +65,7 @@ coreUI = {
         },
         labels = {
             marginY = 20, paddingX = 5, paddingY = 5,
-            width = 200, height = 20,
+            width = 300, height = 20,
             color = {200, 200, 200, 255},
             {
                 prefix = "SELECTED BONE:  ",
@@ -95,15 +95,22 @@ coreUI = {
                 optBinds = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
-                        title = "C R E A T E  A N I M A T I O N",
+                        title = "C R E A T E  F R A M E",
+                        execFunction = function()
+                            local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                            beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..tostring(beautify.gridlist.countRows(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)))
+                            destroyOptUI()
+                            selectCoreOption(false)
+                        end
                     },
                     {
-                        title = "C R E A T E  F R A M E"
+                        title = "C R E A T E  A N I M A T I O N",
                     },
                     {
                         title = "C A N C E L",
                         execFunction = function()
                             destroyOptUI()
+                            selectCoreOption(false)
                         end
                     }
                 }
@@ -111,6 +118,7 @@ coreUI = {
             {
                 optionType = "edit",
                 iconPath = imports.dxCreateTexture("files/assets/images/icons/edit.png", "argb", true, "clamp"),
+                isFrameToBeSelected = true,
                 optBinds = {
                     title = "E  D  I  T    F  R  A  M  E",
                     {
@@ -120,13 +128,28 @@ coreUI = {
                         title = "R E J E C T",
                         execFunction = function()
                             destroyOptUI()
+                            selectCoreOption(false)
                         end
                     }
                 }
             },
             {
                 optionType = "delete",
-                iconPath = imports.dxCreateTexture("files/assets/images/icons/delete.png", "argb", true, "clamp")
+                iconPath = imports.dxCreateTexture("files/assets/images/icons/delete.png", "argb", true, "clamp"),
+                isFrameToBeSelected = true,
+                optBinds = {
+                    title = "D  E  L  E  T  E    F  R  A  M  E",
+                    {
+                        title = "C O N F I R M"
+                    },
+                    {
+                        title = "R E J E C T",
+                        execFunction = function()
+                            destroyOptUI()
+                            selectCoreOption(false)
+                        end
+                    }
+                }
             },
             {
                 optionType = "import",
@@ -146,6 +169,7 @@ coreUI = {
         width = 230, height = 580,
         gridlists = {
             paddingY = 5,
+            typeReference = {},
             {
                 title = "F R A M E  -  I D",
                 prefix = "FRAME #",
@@ -263,8 +287,15 @@ function createCoreUI()
         if coreUI.optionsUI.options.hoveredOption then
             local isMouseKeyClicked = imports.isMouseClicked()
             if isMouseKeyClicked and (isMouseKeyClicked == "mouse1") and (coreUI.optionsUI.options.selectedOption ~= coreUI.optionsUI.options.hoveredOption) then
-                coreUI.optionsUI.options.selectedOption = coreUI.optionsUI.options.hoveredOption
+                local isEnableBlockToBeSkipped = false
                 local optionReference = coreUI.optionsUI.options[(coreUI.optionsUI.options.hoveredOption)]
+                if optionReference.isFrameToBeSelected then
+                    local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                    if not selectedFrame then return false end
+                    isEnableBlockToBeSkipped = true
+                    beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, true)
+                end
+                selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
                 if optionReference.optBinds then
                     createOptUI(optionReference.optBinds)
                 else
@@ -287,6 +318,7 @@ function createCoreUI()
     local viewer_gridlist_height = (coreUI.viewerUI.height - (coreUI.viewerUI.gridlists.paddingY*imports.math.max(#coreUI.viewerUI.gridlists - 1, 0)))/imports.math.max(#coreUI.viewerUI.gridlists, 1)
     for i, j in imports.ipairs(coreUI.viewerUI.gridlists) do
         j.createdElement = beautify.gridlist.create(0, (viewer_gridlist_height + coreUI.viewerUI.gridlists.paddingY)*(i - 1), coreUI.viewerUI.width, viewer_gridlist_height, coreUI.viewerUI.createdParent, false)
+        coreUI.viewerUI.gridlists.typeReference[(j.gridType)] = j
         beautify.gridlist.addColumn(j.createdElement, j.title, coreUI.viewerUI.width)
         for x = 1, 500, 1 do
             local rowIndex = beautify.gridlist.addRow(j.createdElement)
@@ -297,5 +329,33 @@ function createCoreUI()
     beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
     imports.showCursor(true)
     return true
+
+end
+
+
+-------------------------------------------------
+--[[ Function: Selects/Deselects Core Option ]]--
+-------------------------------------------------
+
+function selectCoreOption(optionIndex, skipEnableBlock)
+
+    if not optionIndex then
+        if coreUI.optionsUI.options.selectedOption then
+            coreUI.optionsUI.options.selectedOption = false
+            beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, false)
+            beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, false)
+            return true
+        end
+    else
+        if coreUI.optionsUI.options[optionIndex] and (coreUI.optionsUI.options.selectedOption ~= optionIndex) then
+            coreUI.optionsUI.options.selectedOption = optionIndex
+            if not skipEnableBlock then
+                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, false)
+                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, false)
+                return true
+            end
+        end
+    end
+    return false
 
 end
