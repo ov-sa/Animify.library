@@ -35,6 +35,7 @@ local imports = {
     setElementRotation = setElementRotation,
     getElementBoneRotation = getElementBoneRotation,
     setElementBoneRotation = setElementBoneRotation,
+    getPedBonePosition = getPedBonePosition,
     updateElementRpHAnim = updateElementRpHAnim,
     getScreenFromWorldPosition = getScreenFromWorldPosition,
     processLineOfSight = processLineOfSight,
@@ -46,7 +47,7 @@ local imports = {
     Vector3 = Vector3,
     setPlayerHudComponentVisible = setPlayerHudComponentVisible,
     showChat = showChat,
-    getCamera = getCamera,
+    camera = getCamera(),
     setCameraMatrix = setCameraMatrix,
     table = {
         clone = table.clone
@@ -121,7 +122,7 @@ local function renderCinemator(renderData, cbArguments)
         local _, _, pedRotation = imports.getElementRotation(cinemationData.pedData.createdPed)
         for i, j in imports.pairs(availablePedBones) do
             local isBoneSelected = cinemationData.pedData.boneData and (cinemationData.pedData.boneData.boneID == i)
-            local bonePosVector = imports.Vector3(getPedBonePosition(cinemationData.pedData.createdPed, i))
+            local bonePosVector = imports.Vector3(imports.getPedBonePosition(cinemationData.pedData.createdPed, i))
             if isBoneSelected then
                 imports.setElementPosition(cinemationData.axisRings.x.object, bonePosVector)
                 imports.setElementPosition(cinemationData.axisRings.y.object, bonePosVector)
@@ -132,7 +133,7 @@ local function renderCinemator(renderData, cbArguments)
             end
             local indicatorX, indicatorY = imports.getScreenFromWorldPosition(bonePosVector)
             if indicatorX and indicatorY then
-                if not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
+                if cinemationData.frameData and not isBoneSelected and imports.isMouseOnCircularPosition(indicatorX, indicatorY, indicatorRadius) then
                     if prevMouseKeyClickState == "mouse1" then
                         cinemationData.pedData.boneData = {
                             boneID = i,
@@ -175,14 +176,14 @@ local function renderCinemator(renderData, cbArguments)
         local isLMBOnHold = (isMouseKeyClicked ~= "mouse1") and imports.isKeyOnHold("mouse1")
         prevMouseKeyClickState = isMouseKeyClicked
         local focussedAxis = false
-        if cinemationData.pedData.boneData then
+        if cinemationData.frameData and cinemationData.pedData.boneData then
             if isMouseKeyClicked == "mouse2" then
                 cinemationData.pedData.boneData = false
                 prevCursorRel = false
             else
                 if not cinemationData.pedData.boneData.axisID or not isLMBOnHold then
                     local cursorX, cursorY = imports.getAbsoluteCursorPosition()
-                    local cameraDistance = imports.Vector3(imports.getElementPosition(imports.getCamera())) - imports.Vector3(imports.getElementPosition(cinemationData.pedData.createdPed))
+                    local cameraDistance = imports.Vector3(imports.getElementPosition(imports.camera)) - imports.Vector3(imports.getElementPosition(cinemationData.pedData.createdPed))
                     cameraDistance = cameraDistance.length + 2
                     local sightData = {imports.processLineOfSight(imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, 0)), imports.Vector3(getWorldFromScreenPosition(cursorX, cursorY, cameraDistance)), false, false, false, true, false, false, false, false, cinemationData.pedData.createdPed)}
                     if sightData[1] and sightData[5] then
