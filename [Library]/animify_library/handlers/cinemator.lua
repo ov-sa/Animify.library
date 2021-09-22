@@ -81,7 +81,7 @@ local cinemationData = {
     pedData = {
         createdPed = false,
         boneData = false,
-        skin = 0,
+        skin = 1,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90
     },
@@ -280,9 +280,6 @@ function initCinemator()
         end
         cinemationData.frameData = false
     end)
-    
-    ---TODO: EXPERIMENTAL---
-    testPED = cinemationData.pedData.createdPed
     return true
 
 end
@@ -290,7 +287,6 @@ end
 
 
 ---TODO: EXPERIMENTAL---
-testPED = cinemationData.pedData.createdPed
 function playAnim()
 
     local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
@@ -326,9 +322,14 @@ imports.addEventHandler("onClientPedsProcessed", root, function()
     cinemationData.isPlayingAnim.interpolationProgress = getInterpolationProgress(cinemationData.isPlayingAnim.tickCounter, cinemationData.isPlayingAnim.duration)
     for i, j in pairs(availablePedBones) do
         local currentDefaultRot = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, i)}
-        local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i] , (nextFrameReference and nextFrameReference["Bones"][i])
-        local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
-        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
+        local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i], nextFrameReference["Bones"][i]
+        if prevBoneRot and nextBoneRot then
+            nextBoneRot[1] = math.min(nextBoneRot[1] - prevBoneRot[1], nextBoneRot[1])
+            nextBoneRot[2] = math.min(nextBoneRot[2] - prevBoneRot[2], nextBoneRot[2])
+            nextBoneRot[3] = math.min(nextBoneRot[3] - prevBoneRot[3], nextBoneRot[3])
+            local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
+            imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
+        end
     end
     if cinemationData.isPlayingAnim.interpolationProgress >= 1 then
         cinemationData.isPlayingAnim.currentFrame = cinemationData.isPlayingAnim.currentFrame + 1
