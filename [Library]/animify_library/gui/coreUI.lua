@@ -18,6 +18,7 @@ local imports = {
     ipairs = ipairs,
     tocolor = tocolor,
     destroyElement = destroyElement,
+    addEventHandler = addEventHandler,
     isMouseOnPosition = isMouseOnPosition,
     isMouseClicked = isMouseClicked,
     getInterpolationProgress = getInterpolationProgress,
@@ -307,6 +308,14 @@ function createCoreUI()
     for i, j in imports.ipairs(coreUI.viewerUI.gridlists) do
         j.createdElement = beautify.gridlist.create(0, (viewer_gridlist_height + coreUI.viewerUI.gridlists.paddingY)*(i - 1), coreUI.viewerUI.width, viewer_gridlist_height, coreUI.viewerUI.createdParent, false)
         coreUI.viewerUI.gridlists.typeReference[(j.gridType)] = j
+        if j.gridType == "view_animations" then
+            imports.addEventHandler("onClientUISelectionAltered", j.createdElement, function(selection)
+                beautify.gridlist.clearRows(coreUI.viewerUI.gridlists.typeReference[("view_frames")].createdElement)
+                if selection then
+                    --TODO: INSERT SELECTED ANIM'S FRAME FROM CACHE..
+                end
+            end)
+        end
         beautify.gridlist.addColumn(j.createdElement, j.title, coreUI.viewerUI.width)
         beautify.setUIVisible(j.createdElement, true)
     end
