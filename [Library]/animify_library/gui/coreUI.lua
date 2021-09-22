@@ -14,6 +14,7 @@
 -----------------
 
 local imports = {
+    pairs = pairs,
     ipairs = ipairs,
     tocolor = tocolor,
     destroyElement = destroyElement,
@@ -309,30 +310,35 @@ function createCoreUI()
         if coreUI.optionsUI.options.hoveredOption then
             local isMouseKeyClicked = imports.isMouseClicked()
             if isMouseKeyClicked and (isMouseKeyClicked == "mouse1") and (coreUI.optionsUI.options.selectedOption ~= coreUI.optionsUI.options.hoveredOption) then
-                local isEnableBlockToBeSkipped = false
+                local isOptionToBeSelected, isEnableBlockToBeSkipped = true, false
                 local optionReference = coreUI.optionsUI.options[(coreUI.optionsUI.options.hoveredOption)]
                 if optionReference.isFrameToBeSelected then
                     local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
                     if not selectedFrame then return false end
                     isEnableBlockToBeSkipped = true
+                    selectCoreOption(nil, nil, true)
                     beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, true)
                 end
-                local isOptionToBeSelected = true
                 if optionReference.optBinds then
                     local optBinds = optionReference.optBinds
                     if (optionReference.optionType == "create") or (optionReference.optionType == "delete") then
                         optBinds = {
                             title = optBinds.title,
                         }
+                        local disableViewGrids = {}
                         for i, j in imports.ipairs(imports.table.clone(optionReference.optBinds)) do
                             if j.isFrameToBeSelected then
                                 local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
                                 if selectedFrame then
+                                    isEnableBlockToBeSkipped = true
+                                    disableViewGrids["view_frames"] = true
                                     imports.table.insert(optBinds, j)
                                 end
                             elseif j.isAnimToBeSelected then
                                 local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
                                 if selectedAnim then
+                                    isEnableBlockToBeSkipped = true
+                                    disableViewGrids["view_animations"] = true
                                     imports.table.insert(optBinds, j)
                                 end
                             else
@@ -341,6 +347,11 @@ function createCoreUI()
                         end
                         if #optBinds <= 1 then
                             isOptionToBeSelected = false
+                        else
+                            selectCoreOption(nil, nil, true)
+                            for i, j in imports.pairs(disableViewGrids) do
+                                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference[i].createdElement, j)
+                            end
                         end
                     end
                     if isOptionToBeSelected then
@@ -377,22 +388,30 @@ end
 --[[ Function: Selects/Deselects Core Option ]]--
 -------------------------------------------------
 
-function selectCoreOption(optionIndex, skipEnableBlock)
+function selectCoreOption(optionIndex, skipEnableBlock, resetEnabledStates)
 
-    if not optionIndex then
+    if optionIndex == false then
         if coreUI.optionsUI.options.selectedOption then
             coreUI.optionsUI.options.selectedOption = false
-            beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, false)
-            beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, false)
+            for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
+                beautify.setUIDisabled(j.createdElement, false)
+            end
             return true
         end
-    else
+    elseif optionIndex then
         if coreUI.optionsUI.options[optionIndex] and (coreUI.optionsUI.options.selectedOption ~= optionIndex) then
             coreUI.optionsUI.options.selectedOption = optionIndex
             if not skipEnableBlock then
-                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, false)
-                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, false)
+                for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
+                    beautify.setUIDisabled(j.createdElement, false)
+                end
                 return true
+            end
+        end
+    else
+        if resetEnabledStates then
+            for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
+                beautify.setUIDisabled(j.createdElement, false)
             end
         end
     end
