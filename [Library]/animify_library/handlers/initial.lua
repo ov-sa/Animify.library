@@ -27,6 +27,7 @@ imports.addEventHandler("onClientResourceStart", resource, function()
 
     imports.setUITheme("animify-dark-slver-theme")
     initCinemator()
+    createViewPortUI()
     createCoreUI()
 
 end)

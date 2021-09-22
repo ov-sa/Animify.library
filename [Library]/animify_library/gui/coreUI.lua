@@ -48,41 +48,6 @@ local imports = {
 
 coreUI = {
 
-    viewportUI = {
-        sliders = {
-            marginY = 5, paddingY = 5,
-            width = 200, height = 24,
-            {
-                title = "PED ROTATION",
-                sliderType = "ped_rotation",
-                defaultPercent = 100
-            },
-            {
-                title = "CAMERA ROTATION",
-                sliderType = "camera_rotation",
-                defaultPercent = 100
-            },
-            {
-                title = "CAMERA FOV",
-                sliderType = "camera_fov",
-                defaultPercent = 100
-            }
-        },
-        labels = {
-            marginY = 20, paddingX = 5, paddingY = 5,
-            width = 300, height = 20,
-            color = {200, 200, 200, 255},
-            {
-                prefix = "SELECTED BONE:  ",
-                labelType = "bone_id"
-            },
-            {
-                prefix = "SELECTED AXIS:  ",
-                labelType = "axis_id"
-            }
-        }
-    },
-
     optionsUI = {
         startX = CLIENT_MTA_RESOLUTION[1] - 5, startY = 0,
         width = 42, height = 375,
@@ -101,7 +66,7 @@ coreUI = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
                         title = "C R E A T E  F R A M E",
-                        isAnimToBeSelected = true,
+                        mandatorySelection = "view_animations",
                         execFunction = function()
                             local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
                             beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..tostring(beautify.gridlist.countRows(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)))
@@ -133,7 +98,7 @@ coreUI = {
             {
                 optionType = "edit",
                 iconPath = imports.dxCreateTexture("files/assets/images/icons/edit.png", "argb", true, "clamp"),
-                isFrameToBeSelected = true,
+                mandatorySelection = "view_frames",
                 optBinds = {
                     title = "E  D  I  T    F  R  A  M  E",
                     {
@@ -155,11 +120,11 @@ coreUI = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
                         title = "D E L E T E  F R A M E",
-                        isFrameToBeSelected = true,
+                        mandatorySelection = "view_frames",
                     },
                     {
                         title = "D E L E T E  A N I M A T I O N",
-                        isAnimToBeSelected = true,
+                        mandatorySelection = "view_animations",
                         execFunction = function()
                             destroyOptUI()
                             selectCoreOption(false)
@@ -215,36 +180,8 @@ coreUI = {
 
 function createCoreUI()
 
-    -->> View-Port UI <<--
-    coreUI.viewportUI.sliders.__endY = 0
-    for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
-        local viewport_slider_width, viewport_slider_height = coreUI.viewportUI.sliders.width, coreUI.viewportUI.sliders.height
-        local viewport_slider_startX, viewport_slider_startY = CLIENT_MTA_RESOLUTION[1] - viewport_slider_width, coreUI.viewportUI.sliders.marginY + ((viewport_slider_height + coreUI.viewportUI.sliders.paddingY)*(i - 1))
-        j.createdElement = beautify.slider.create(viewport_slider_startX, viewport_slider_startY, viewport_slider_width, viewport_slider_height, "horizontal", nil, false)
-        beautify.slider.setText(j.createdElement, j.title)
-        beautify.slider.setPercent(j.createdElement, j.defaultPercent)
-        beautify.setUIVisible(j.createdElement, true)
-        if i == #coreUI.viewportUI.sliders then
-            coreUI.viewportUI.sliders.__endY = viewport_slider_startY + viewport_slider_height + coreUI.viewportUI.sliders.paddingY
-        end
-    end
-    coreUI.viewportUI.labels.__endY = coreUI.viewportUI.sliders.__endY
-    for i, j in imports.ipairs(coreUI.viewportUI.labels) do
-        local viewport_label_width, viewport_label_height = coreUI.viewportUI.labels.width, coreUI.viewportUI.labels.height
-        local viewport_label_startX, viewport_label_startY = CLIENT_MTA_RESOLUTION[1] - viewport_label_width - coreUI.viewportUI.labels.paddingX, coreUI.viewportUI.sliders.__endY + coreUI.viewportUI.labels.marginY + ((viewport_label_height + coreUI.viewportUI.labels.paddingY)*(i - 1))
-        j.createdElement = beautify.label.create("", viewport_label_startX, viewport_label_startY, viewport_label_width, viewport_label_height, nil, false)
-        beautify.label.setColor(j.createdElement, coreUI.viewportUI.labels.color)
-        beautify.label.setHorizontalAlignment(j.createdElement, "right")
-        beautify.label.setVerticalAlignment(j.createdElement, "center")
-        beautify.setUIDisabled(j.createdElement, true)
-        beautify.setUIVisible(j.createdElement, true)
-        if i == #coreUI.viewportUI.labels then
-            coreUI.viewportUI.labels.__endY = viewport_label_startY + viewport_label_height + coreUI.viewportUI.labels.paddingY
-        end
-    end
-
     -->> Options UI <<--
-    coreUI.optionsUI.startX, coreUI.optionsUI.startY = coreUI.optionsUI.startX - coreUI.optionsUI.width, coreUI.viewportUI.labels.__endY + coreUI.optionsUI.startY
+    coreUI.optionsUI.startX, coreUI.optionsUI.startY = coreUI.optionsUI.startX - coreUI.optionsUI.width, viewportUI.labels.__endY + coreUI.optionsUI.startY
     local option_paddingX, options_paddingY = (coreUI.optionsUI.width - coreUI.optionsUI.options.size)*0.5, ((coreUI.optionsUI.height - coreUI.optionsUI.options.marginY) - (#coreUI.optionsUI.options*coreUI.optionsUI.options.size))/(#coreUI.optionsUI.options + 1)
     for i, j in imports.ipairs(coreUI.optionsUI.options) do
         j.startX = option_paddingX
@@ -310,14 +247,12 @@ function createCoreUI()
         if coreUI.optionsUI.options.hoveredOption then
             local isMouseKeyClicked = imports.isMouseClicked()
             if isMouseKeyClicked and (isMouseKeyClicked == "mouse1") and (coreUI.optionsUI.options.selectedOption ~= coreUI.optionsUI.options.hoveredOption) then
-                local isOptionToBeSelected, isEnableBlockToBeSkipped = true, false
+                local isOptionToBeSelected, disableViewGrids = true, {}
                 local optionReference = coreUI.optionsUI.options[(coreUI.optionsUI.options.hoveredOption)]
-                if optionReference.isFrameToBeSelected then
-                    local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
-                    if not selectedFrame then return false end
-                    isEnableBlockToBeSkipped = true
-                    selectCoreOption(nil, nil, true)
-                    beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, true)
+                if optionReference.mandatorySelection then
+                    local viewGridSelection = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference[(optionReference.mandatorySelection)].createdElement)
+                    if not viewGridSelection then return false end
+                    disableViewGrids[(optionReference.mandatorySelection)] = true
                 end
                 if optionReference.optBinds then
                     local optBinds = optionReference.optBinds
@@ -325,20 +260,11 @@ function createCoreUI()
                         optBinds = {
                             title = optBinds.title,
                         }
-                        local disableViewGrids = {}
                         for i, j in imports.ipairs(imports.table.clone(optionReference.optBinds)) do
-                            if j.isFrameToBeSelected then
-                                local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
-                                if selectedFrame then
-                                    isEnableBlockToBeSkipped = true
-                                    disableViewGrids["view_frames"] = true
-                                    imports.table.insert(optBinds, j)
-                                end
-                            elseif j.isAnimToBeSelected then
-                                local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
-                                if selectedAnim then
-                                    isEnableBlockToBeSkipped = true
-                                    disableViewGrids["view_animations"] = true
+                            if j.mandatorySelection then
+                                local viewGridSelection = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference[(j.mandatorySelection)].createdElement)
+                                if viewGridSelection then
+                                    disableViewGrids[(j.mandatorySelection)] = true
                                     imports.table.insert(optBinds, j)
                                 end
                             else
@@ -347,14 +273,15 @@ function createCoreUI()
                         end
                         if #optBinds <= 1 then
                             isOptionToBeSelected = false
-                        else
-                            selectCoreOption(nil, nil, true)
-                            for i, j in imports.pairs(disableViewGrids) do
-                                beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference[i].createdElement, j)
-                            end
                         end
                     end
                     if isOptionToBeSelected then
+                        local isEnableBlockToBeSkipped = false
+                        selectCoreOption(nil, nil, true)
+                        for i, j in imports.pairs(disableViewGrids) do
+                            isEnableBlockToBeSkipped = true
+                            beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference[i].createdElement, j)
+                        end
                         selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
                         createOptUI(optBinds)
                     end
@@ -380,41 +307,5 @@ function createCoreUI()
     beautify.setUIVisible(coreUI.viewerUI.createdParent, true)
     imports.showCursor(true)
     return true
-
-end
-
-
--------------------------------------------------
---[[ Function: Selects/Deselects Core Option ]]--
--------------------------------------------------
-
-function selectCoreOption(optionIndex, skipEnableBlock, resetEnabledStates)
-
-    if optionIndex == false then
-        if coreUI.optionsUI.options.selectedOption then
-            coreUI.optionsUI.options.selectedOption = false
-            for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
-                beautify.setUIDisabled(j.createdElement, false)
-            end
-            return true
-        end
-    elseif optionIndex then
-        if coreUI.optionsUI.options[optionIndex] and (coreUI.optionsUI.options.selectedOption ~= optionIndex) then
-            coreUI.optionsUI.options.selectedOption = optionIndex
-            if not skipEnableBlock then
-                for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
-                    beautify.setUIDisabled(j.createdElement, false)
-                end
-                return true
-            end
-        end
-    else
-        if resetEnabledStates then
-            for i, j in imports.pairs(coreUI.viewerUI.gridlists.typeReference) do
-                beautify.setUIDisabled(j.createdElement, false)
-            end
-        end
-    end
-    return false
 
 end

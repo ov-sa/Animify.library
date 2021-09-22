@@ -24,6 +24,7 @@
     <script src="configurations/templates/card.lua" type="client" cache="false"/>
 
     <!-- GUIs -->
+    <script src="gui/viewportUI.lua" type="client" cache="false"/>
     <script src="gui/optUI.lua" type="client" cache="false"/>
     <script src="gui/coreUI.lua" type="client" cache="false"/>
 

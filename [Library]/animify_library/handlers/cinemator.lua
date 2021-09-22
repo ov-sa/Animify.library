@@ -141,7 +141,7 @@ local function renderCinemator(renderData, cbArguments)
                 imports.dxDrawImage(indicatorX, indicatorY, cinemationData.boneIndicator.size, cinemationData.boneIndicator.size, cinemationData.boneIndicator.bgPath, 0, 0, 0, (isBoneSelected and cinemationData.boneIndicator.focussedColor) or cinemationData.boneIndicator.unfocussedColor, false)
             end
         end
-        for i, j in imports.ipairs(coreUI.viewportUI.sliders) do
+        for i, j in imports.ipairs(viewportUI.sliders) do
             local _, sliderPercent = beautify.slider.getPercent(j.createdElement)
             if sliderPercent then
                 sliderPercent = sliderPercent/100
@@ -152,7 +152,7 @@ local function renderCinemator(renderData, cbArguments)
                 end
             end
         end
-        for i, j in imports.ipairs(coreUI.viewportUI.labels) do
+        for i, j in imports.ipairs(viewportUI.labels) do
             if not cinemationData.pedData.boneData then
                 beautify.setUIVisible(j.createdElement, false)
             else
