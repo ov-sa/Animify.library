@@ -31,6 +31,10 @@ local imports = {
     dxDrawText = dxDrawText,
     dxGetTexturePixels = dxGetTexturePixels,
     showCursor = showCursor,
+    table = {
+        insert = table.insert,
+        clone = table.clone
+    },
     math = {
         max = math.max
     }
@@ -96,6 +100,7 @@ coreUI = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
                         title = "C R E A T E  F R A M E",
+                        isAnimToBeSelected = true,
                         execFunction = function()
                             local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
                             beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..tostring(beautify.gridlist.countRows(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)))
@@ -145,14 +150,22 @@ coreUI = {
             {
                 optionType = "delete",
                 iconPath = imports.dxCreateTexture("files/assets/images/icons/delete.png", "argb", true, "clamp"),
-                isFrameToBeSelected = true,
                 optBinds = {
                     title = "S  E  L  E  C  T    T  A  S  K",
                     {
                         title = "D E L E T E  F R A M E",
+                        isFrameToBeSelected = true,
                     },
                     {
                         title = "D E L E T E  A N I M A T I O N",
+                        isAnimToBeSelected = true,
+                        execFunction = function()
+                            destroyOptUI()
+                            selectCoreOption(false)
+                        end
+                    },
+                    {
+                        title = "C A N C E L",
                         execFunction = function()
                             destroyOptUI()
                             selectCoreOption(false)
@@ -304,17 +317,39 @@ function createCoreUI()
                     isEnableBlockToBeSkipped = true
                     beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, true)
                 end
-                selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
+                local isOptionToBeSelected = true
                 if optionReference.optBinds then
-                    createOptUI(optionReference.optBinds)
+                    local optBinds = optionReference.optBinds
+                    if (optionReference.optionType == "create") or (optionReference.optionType == "delete") then
+                        optBinds = {
+                            title = optBinds.title,
+                        }
+                        for i, j in imports.ipairs(imports.table.clone(optionReference.optBinds)) do
+                            if j.isFrameToBeSelected then
+                                local selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                                if selectedFrame then
+                                    imports.table.insert(optBinds, j)
+                                end
+                            elseif j.isAnimToBeSelected then
+                                local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+                                if selectedAnim then
+                                    imports.table.insert(optBinds, j)
+                                end
+                            else
+                                imports.table.insert(optBinds, j)
+                            end
+                        end
+                        if #optBinds <= 1 then
+                            isOptionToBeSelected = false
+                        end
+                    end
+                    if isOptionToBeSelected then
+                        selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
+                        createOptUI(optBinds)
+                    end
                 else
                     destroyOptUI()
                 end
-                --[[
-                if optionReference.optionType == "create" then
-                elseif optionReference.optionType == "edit" then
-                elseif optionReference.optionType == "delete" then
-                end]]
             end
         end
     end, {
