@@ -17,7 +17,8 @@
 local imports = {
     pairs = pairs,
     ipairs = ipairs,
-    loadstring = loadstring
+    loadstring = loadstring,
+    addEventHandler = addEventHandler
 }
 
 

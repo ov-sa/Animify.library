@@ -24,6 +24,7 @@ local imports = {
     isMouseOnCircularPosition = isMouseOnCircularPosition,
     isKeyOnHold = isKeyOnHold,
     isMouseClicked = isMouseClicked,
+    getAnimFrameCache = getAnimFrameCache,
     createPed = createPed,
     createObject = createObject,
     removePedClothes = removePedClothes,
@@ -63,10 +64,10 @@ local imports = {
 local prevMouseKeyClickState = false
 local prevCursorRel = false
 local cinemationData = {
+    frameData = false,
     pedData = {
         createdPed = false,
         boneData = false,
-        boneOffsets = {},
         skin = 0,
         position = {1483.508544921875, -1466.627685546875, 40.5234375},
         rotation = 90,
@@ -104,8 +105,10 @@ local cinemationData = {
 
 local function renderPedBones()
 
-    for i, j in imports.pairs(cinemationData.pedData.boneOffsets) do
-        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j.rotation.current))
+    if not cinemationData.frameData then return false end
+
+    for i, j in imports.pairs(cinemationData.frameData["Bones"]) do
+        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
     end
     imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
 
@@ -191,23 +194,23 @@ local function renderCinemator(renderData, cbArguments)
                         local cursorRelX, cursorRelY = imports.getCursorPosition()
                         if not prevCursorRel then
                             prevCursorRel = {cursorRelX, cursorRelY}
-                            if not cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)] then
-                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)] = {
-                                    rotation = {
-                                        initial = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)},
-                                        current = {0, 0, 0}
-                                    }
-                                }
-                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current = imports.table.clone(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial, false)
+                            if not cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)] then
+                                if not cinemationData.frameData["__EDITOR_CACHE__"] then
+                                    cinemationData.frameData["__EDITOR_CACHE__"] = {}
+                                end
+                                if not cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] then
+                                    cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, cinemationData.pedData.boneData.boneID)}
+                                end
+                                cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)] = imports.table.clone(cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)], false)
                             else
-                                cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.initial = imports.table.clone(cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)].rotation.current, false)
+                                cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)] = imports.table.clone(cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)], false)
                             end
                         end
                         cursorRelX, cursorRelY = cursorRelX - prevCursorRel[1], cursorRelY - prevCursorRel[2]
-                        local boneReference = cinemationData.pedData.boneOffsets[(cinemationData.pedData.boneData.boneID)]
+                        local boneReference = cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)]
                         local isBoneAxisIndexModified = availablePedBones[(cinemationData.pedData.boneData.boneID)].axes[(cinemationData.pedData.boneData.axisID)]
                         local boneAxisID = (isBoneAxisIndexModified and cinemationData.axisRings[isBoneAxisIndexModified].axisIndex) or cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
-                        boneReference.rotation.current[boneAxisID] = (boneReference.rotation.initial[boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
+                        boneReference[boneAxisID] = (cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)][boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
                     end
                 end
             end
@@ -253,6 +256,17 @@ function initCinemator()
         renderType = "input"
     })
     imports.addEventHandler("onClientPedsProcessed", root, renderPedBones)
+    imports.addEventHandler("onClientUISelectionAltered", coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, function(selection)
+        cinemationData.pedData.boneData = false
+        if selection then
+            local selectedAnim, selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement), beautify.gridlist.getSelection(source)
+            if selectedAnim and selectedFrame then
+                cinemationData.frameData = imports.getAnimFrameCache(selectedAnim, selectedFrame)
+                return true
+            end
+        end
+        cinemationData.frameData = false
+    end)
     return true
 
 end
