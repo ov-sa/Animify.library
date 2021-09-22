@@ -24,10 +24,10 @@ local imports = {
     isMouseOnCircularPosition = isMouseOnCircularPosition,
     isKeyOnHold = isKeyOnHold,
     isMouseClicked = isMouseClicked,
+    removePedClothes = removePedClothes,
     getAnimFrameCache = getAnimFrameCache,
     createPed = createPed,
     createObject = createObject,
-    removePedClothes = removePedClothes,
     setElementCollidableWith = setElementCollidableWith,
     getElementPosition = getElementPosition,
     setElementPosition = setElementPosition,
@@ -236,9 +236,7 @@ function initCinemator()
 
     initModels()
     cinemationData.pedData.createdPed = imports.createPed(cinemationData.pedData.skin, cinemationData.pedData.position[1], cinemationData.pedData.position[2], cinemationData.pedData.position[3], cinemationData.pedData.rotation)
-    for i = 0, 17 do
-        imports.removePedClothes(cinemationData.pedData.createdPed, i)
-    end
+    imports.removePedClothes(cinemationData.pedData.createdPed)
     for i, j in imports.pairs(cinemationData.axisRings) do
         j.object = imports.createObject(Animify_Models["axisRing"].modelID, 0, 0, 0)
         imports.setElementCollidableWith(j.object, cinemationData.pedData.createdPed, false)

@@ -18,7 +18,10 @@ local imports = {
     pairs = pairs,
     ipairs = ipairs,
     loadstring = loadstring,
-    addEventHandler = addEventHandler
+    isElement = isElement,
+    getElementType = getElementType,
+    addEventHandler = addEventHandler,
+    removePedClothes = removePedClothes
 }
 
 
@@ -41,6 +44,22 @@ function setUITheme(theme)
         beautify.setUITemplate(i, j["animify-dark-slver-theme"])
     end
     return true
+
+end
+
+
+-----------------------------------------
+--[[ Function: Removes Ped's Clothes ]]--
+-----------------------------------------
+
+function removePedClothes(ped)
+
+    if imports.isElement(ped) and (imports.getElementType(ped) == "ped") then
+        for i = 0, 17 do
+            imports.removePedClothes(ped, i)
+        end
+    end
+    return false
 
 end
 
