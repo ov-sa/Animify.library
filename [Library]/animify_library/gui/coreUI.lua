@@ -105,6 +105,15 @@ coreUI = {
                     },
                     {
                         title = "C R E A T E  A N I M A T I O N",
+                        execFunction = function()
+                            local animIndex = createAnimCache()
+                            if animIndex then
+                                local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+                                beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_animations"].prefix..animIndex)
+                            end
+                            destroyOptUI()
+                            selectCoreOption(false)
+                        end
                     },
                     {
                         title = "C A N C E L",
@@ -138,12 +147,12 @@ coreUI = {
                 iconPath = imports.dxCreateTexture("files/assets/images/icons/delete.png", "argb", true, "clamp"),
                 isFrameToBeSelected = true,
                 optBinds = {
-                    title = "D  E  L  E  T  E    F  R  A  M  E",
+                    title = "S  E  L  E  C  T    T  A  S  K",
                     {
-                        title = "C O N F I R M"
+                        title = "D E L E T E  F R A M E",
                     },
                     {
-                        title = "R E J E C T",
+                        title = "D E L E T E  A N I M A T I O N",
                         execFunction = function()
                             destroyOptUI()
                             selectCoreOption(false)
