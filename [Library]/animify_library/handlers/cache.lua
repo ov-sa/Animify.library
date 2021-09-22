@@ -14,6 +14,7 @@
 -----------------
 
 local imports = {
+    updateFrameView = updateFrameView,
     table = {
         insert = table.insert,
         remove = table.remove
@@ -30,9 +31,9 @@ local cache = {
 }
 
 
-------------------------------------------------
---[[ Functions: Creates/Destroys Anim Cache ]]--
-------------------------------------------------
+----------------------------------------------------------
+--[[ Functions: Creates/Destroys/Retrieves Anim Cache ]]--
+----------------------------------------------------------
 
 function createAnimCache()
 
@@ -48,6 +49,14 @@ function destroyAnimCache(animIndex)
     if not animIndex or not cache["Animations"][animIndex] then return false end
 
     return imports.table.remove(cache["Animations"], animIndex)
+
+end
+
+function getAnimCache(animIndex)
+
+    if not animIndex or not cache["Animations"][animIndex] then return false end
+
+    return cache["Animations"][animIndex]
 
 end
 

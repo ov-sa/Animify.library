@@ -23,6 +23,8 @@ local imports = {
     isMouseClicked = isMouseClicked,
     getInterpolationProgress = getInterpolationProgress,
     interpolateBetween = interpolateBetween,
+    selectCoreOption = selectCoreOption,
+    updateFrameView = updateFrameView,
     dxCreateFont = dxCreateFont,
     dxCreateRenderTarget = dxCreateRenderTarget,
     dxSetRenderTarget = dxSetRenderTarget,
@@ -78,7 +80,7 @@ coreUI = {
                                 end
                             end
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     },
                     {
@@ -90,14 +92,14 @@ coreUI = {
                                 beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_animations"].prefix..animIndex)
                             end
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     },
                     {
                         title = "C A N C E L",
                         execFunction = function()
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     }
                 }
@@ -115,7 +117,7 @@ coreUI = {
                         title = "R E J E C T",
                         execFunction = function()
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     }
                 }
@@ -134,14 +136,14 @@ coreUI = {
                         mandatorySelection = "view_animations",
                         execFunction = function()
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     },
                     {
                         title = "C A N C E L",
                         execFunction = function()
                             destroyOptUI()
-                            selectCoreOption(false)
+                            imports.selectCoreOption(false)
                         end
                     }
                 }
@@ -284,12 +286,12 @@ function createCoreUI()
                     end
                     if isOptionToBeSelected then
                         local isEnableBlockToBeSkipped = false
-                        selectCoreOption(nil, nil, true)
+                        imports.selectCoreOption(nil, nil, true)
                         for i, j in imports.pairs(disableViewGrids) do
                             isEnableBlockToBeSkipped = true
                             beautify.setUIDisabled(coreUI.viewerUI.gridlists.typeReference[i].createdElement, j)
                         end
-                        selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
+                        imports.selectCoreOption(coreUI.optionsUI.options.hoveredOption, isEnableBlockToBeSkipped)
                         createOptUI(optBinds)
                     end
                 else
@@ -309,12 +311,7 @@ function createCoreUI()
         j.createdElement = beautify.gridlist.create(0, (viewer_gridlist_height + coreUI.viewerUI.gridlists.paddingY)*(i - 1), coreUI.viewerUI.width, viewer_gridlist_height, coreUI.viewerUI.createdParent, false)
         coreUI.viewerUI.gridlists.typeReference[(j.gridType)] = j
         if j.gridType == "view_animations" then
-            imports.addEventHandler("onClientUISelectionAltered", j.createdElement, function(selection)
-                beautify.gridlist.clearRows(coreUI.viewerUI.gridlists.typeReference[("view_frames")].createdElement)
-                if selection then
-                    --TODO: INSERT SELECTED ANIM'S FRAME FROM CACHE..
-                end
-            end)
+            imports.addEventHandler("onClientUISelectionAltered", j.createdElement, imports.updateFrameView)
         end
         beautify.gridlist.addColumn(j.createdElement, j.title, coreUI.viewerUI.width)
         beautify.setUIVisible(j.createdElement, true)

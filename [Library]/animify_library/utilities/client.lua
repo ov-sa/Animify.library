@@ -16,6 +16,7 @@
 
 local imports = {
     pairs = pairs,
+    ipairs = ipairs,
     loadstring = loadstring
 }
 
@@ -77,5 +78,24 @@ function selectCoreOption(optionIndex, skipEnableBlock, resetEnabledStates)
         end
     end
     return result
+
+end
+
+
+--------------------------------------
+--[[ Function: Updates Frame View ]]--
+--------------------------------------
+
+function updateFrameView(animIndex)
+
+    beautify.gridlist.clearRows(coreUI.viewerUI.gridlists.typeReference[("view_frames")].createdElement)
+    if animIndex then
+        local animCache = getAnimCache(animIndex)
+        for i, j in imports.ipairs(animCache["Frames"]) do
+            local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+            beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..i)
+        end
+    end
+    return true
 
 end
