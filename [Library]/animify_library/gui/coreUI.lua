@@ -320,10 +320,6 @@ function createCoreUI()
         j.createdElement = beautify.gridlist.create(0, (viewer_gridlist_height + coreUI.viewerUI.gridlists.paddingY)*(i - 1), coreUI.viewerUI.width, viewer_gridlist_height, coreUI.viewerUI.createdParent, false)
         coreUI.viewerUI.gridlists.typeReference[(j.gridType)] = j
         beautify.gridlist.addColumn(j.createdElement, j.title, coreUI.viewerUI.width)
-        for x = 1, 500, 1 do
-            local rowIndex = beautify.gridlist.addRow(j.createdElement)
-            beautify.gridlist.setRowData(j.createdElement, rowIndex, 1, j.prefix..tostring(beautify.gridlist.countRows(j.createdElement)))
-        end
         beautify.setUIVisible(j.createdElement, true)
     end
     beautify.setUIVisible(coreUI.viewerUI.createdParent, true)

@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_scrollbar"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         track = {
             color = {20, 20, 20, 255}
         },

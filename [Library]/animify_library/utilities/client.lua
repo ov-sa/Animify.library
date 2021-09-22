@@ -26,7 +26,7 @@ function setUITheme(theme)
     if not theme then return false end
 
     for i, j in pairs(availableTemplates) do
-        beautify.setUITemplate(i, j["ov-dark-theme"])
+        beautify.setUITemplate(i, j["animify-dark-slver-theme"])
     end
     return true
 

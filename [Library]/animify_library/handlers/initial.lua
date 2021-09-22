@@ -25,7 +25,7 @@ local imports = {
 
 imports.addEventHandler("onClientResourceStart", resource, function()
 
-    imports.setUITheme("ov-dark-theme")
+    imports.setUITheme("animify-dark-slver-theme")
     initCinemator()
     createCoreUI()
 

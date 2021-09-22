@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_selector"] = {
 
-    ["ov-dark-theme"] = {},
+    ["animify-dark-slver-theme"] = {},
 
     ["dark-blue-theme"] = {
         color = {50, 50, 50, 255},

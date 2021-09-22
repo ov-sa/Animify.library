@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_card"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         color = {0, 0, 0, 255}
     }
 

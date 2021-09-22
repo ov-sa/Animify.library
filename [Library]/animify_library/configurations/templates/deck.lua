@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_deck"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         color = {2, 2, 2, 255},
         titleBar = {
             color = {20, 20, 20, 255},

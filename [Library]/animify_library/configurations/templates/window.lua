@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_window"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         color = {0, 0, 0, 255},
         titleBar = {
             fontColor = {175, 175, 175, 255},

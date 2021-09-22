@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_slider"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         fontColor = {255, 255, 255, 255},
         track = {
             progressedColor = {175, 175, 175, 255},

@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_gridlist"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         color = {20, 20, 20, 255},
         columnBar = {
             font = {"files/assets/fonts/signika_semibold.rw", 11},

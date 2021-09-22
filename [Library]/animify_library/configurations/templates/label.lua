@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_label"] = {
 
-    ["ov-dark-theme"] = {
+    ["animify-dark-slver-theme"] = {
         fontColor = {175, 175, 175, 255}
     }
 

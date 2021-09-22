@@ -15,7 +15,7 @@
 
 availableTemplates["beautify_checkbox"] = {
 
-    ["ov-dark-theme"] = {},
+    ["animify-dark-slver-theme"] = {},
 
     ["dark-blue-theme"] = {
         fontColor = {200, 200, 200, 255},
