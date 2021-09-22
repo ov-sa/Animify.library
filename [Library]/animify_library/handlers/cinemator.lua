@@ -237,7 +237,13 @@ local function renderCinemator(renderData, cbArguments)
                 end
             end
             imports.dxSetShaderValue(j.shader, "axisAlpha", (not cinemationData.pedData.boneData and 0) or (((cinemationData.pedData.boneData and (cinemationData.pedData.boneData.axisID == i)) or (j.object == focussedAxis)) and 1) or 0.05)
-        end 
+        end
+        --TODO: REMOVE LATER:
+        local testBone = 32
+        if cinemationData.frameData and cinemationData.frameData["Bones"][testBone] then
+            dxDrawText("x = "..cinemationData.frameData["Bones"][testBone][1]..", y = "..cinemationData.frameData["Bones"][testBone][2]..", z = "..cinemationData.frameData["Bones"][testBone][3], 0, 0, 1366, 100, -1, 1, "default-bold", "center", "top", true, false, false, false)
+        end
+        -----------
     end
 
 end
@@ -297,10 +303,29 @@ function playAnim()
     cinemationData.isPlayingAnim = {
         animCache = animCache,
         currentFrame = 1,
-        duration = 700,
+        duration = 150,
         tickCounter = CLIENT_CURRENT_TICK
     }
-    outputChatBox("PLAYING ANIM??")
+
+end
+
+
+function findTurningAngle(initial, target)
+
+    if initial < target then
+        local currentDistance = target - initial
+        local otherDistance = 360 - currentDistance
+        if otherDistance < currentDistance then
+            target = -otherDistance
+        end
+    else
+        local currentDistance = initial - target
+        local otherDistance = 360 - currentDistance
+        if otherDistance < currentDistance then
+            target = -otherDistance
+        end
+    end
+    return target
 
 end
 
@@ -324,11 +349,12 @@ imports.addEventHandler("onClientPedsProcessed", root, function()
         local currentDefaultRot = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, i)}
         local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i], nextFrameReference["Bones"][i]
         if prevBoneRot and nextBoneRot then
-            nextBoneRot[1] = math.min(nextBoneRot[1] - prevBoneRot[1], nextBoneRot[1])
-            nextBoneRot[2] = math.min(nextBoneRot[2] - prevBoneRot[2], nextBoneRot[2])
-            nextBoneRot[3] = math.min(nextBoneRot[3] - prevBoneRot[3], nextBoneRot[3])
+            nextBoneRot[1] = findTurningAngle(prevBoneRot[1], nextBoneRot[1])
+            nextBoneRot[2] = findTurningAngle(prevBoneRot[2], nextBoneRot[2])
+            nextBoneRot[3] = findTurningAngle(prevBoneRot[3], nextBoneRot[3])
             local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
             imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
+            imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
         end
     end
     if cinemationData.isPlayingAnim.interpolationProgress >= 1 then
