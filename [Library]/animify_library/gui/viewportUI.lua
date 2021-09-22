@@ -28,6 +28,7 @@ viewportUI = {
     sliders = {
         marginY = 5, paddingY = 5,
         width = 200, height = 24,
+        typeReference = {},
         {
             title = "PED ROTATION",
             sliderType = "ped_rotation",
@@ -48,6 +49,7 @@ viewportUI = {
     labels = {
         marginY = 20, paddingX = 5, paddingY = 5,
         width = 300, height = 20,
+        typeReference = {},
         color = {200, 200, 200, 255},
         {
             prefix = "SELECTED BONE:  ",
@@ -74,6 +76,7 @@ function createViewPortUI()
         local viewport_slider_width, viewport_slider_height = viewportUI.sliders.width, viewportUI.sliders.height
         local viewport_slider_startX, viewport_slider_startY = CLIENT_MTA_RESOLUTION[1] - viewport_slider_width, viewportUI.sliders.marginY + ((viewport_slider_height + viewportUI.sliders.paddingY)*(i - 1))
         j.createdElement = beautify.slider.create(viewport_slider_startX, viewport_slider_startY, viewport_slider_width, viewport_slider_height, "horizontal", nil, false)
+        viewportUI.sliders.typeReference[(j.sliderType)] = j
         beautify.slider.setText(j.createdElement, j.title)
         beautify.slider.setPercent(j.createdElement, j.defaultPercent)
         beautify.setUIVisible(j.createdElement, true)
@@ -86,6 +89,7 @@ function createViewPortUI()
         local viewport_label_width, viewport_label_height = viewportUI.labels.width, viewportUI.labels.height
         local viewport_label_startX, viewport_label_startY = CLIENT_MTA_RESOLUTION[1] - viewport_label_width - viewportUI.labels.paddingX, viewportUI.sliders.__endY + viewportUI.labels.marginY + ((viewport_label_height + viewportUI.labels.paddingY)*(i - 1))
         j.createdElement = beautify.label.create("", viewport_label_startX, viewport_label_startY, viewport_label_width, viewport_label_height, nil, false)
+        viewportUI.labels.typeReference[(j.labelType)] = j
         beautify.label.setColor(j.createdElement, viewportUI.labels.color)
         beautify.label.setHorizontalAlignment(j.createdElement, "right")
         beautify.label.setVerticalAlignment(j.createdElement, "center")
