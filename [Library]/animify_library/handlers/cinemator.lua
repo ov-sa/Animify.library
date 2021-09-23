@@ -58,6 +58,9 @@ local imports = {
         cos = math.cos,
         rad = math.rad
     },
+    angle = {
+        shortTarget = angle.shortTarget
+    },
     string = {
         upper = string.upper
     }
@@ -309,26 +312,6 @@ function playAnim()
 
 end
 
-
-function findTurningAngle(initial, target)
-
-    if initial < target then
-        local currentDistance = target - initial
-        local otherDistance = 360 - currentDistance
-        if otherDistance < currentDistance then
-            target = -otherDistance
-        end
-    else
-        local currentDistance = initial - target
-        local otherDistance = 360 - currentDistance
-        if otherDistance < currentDistance then
-            target = -otherDistance
-        end
-    end
-    return target
-
-end
-
 imports.addEventHandler("onClientPedsProcessed", root, function()
 
     if not cinemationData.isPlayingAnim then return false end
@@ -349,9 +332,9 @@ imports.addEventHandler("onClientPedsProcessed", root, function()
         local currentDefaultRot = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, i)}
         local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i], nextFrameReference["Bones"][i]
         if prevBoneRot and nextBoneRot then
-            nextBoneRot[1] = findTurningAngle(prevBoneRot[1], nextBoneRot[1])
-            nextBoneRot[2] = findTurningAngle(prevBoneRot[2], nextBoneRot[2])
-            nextBoneRot[3] = findTurningAngle(prevBoneRot[3], nextBoneRot[3])
+            nextBoneRot[1] = imports.angle.shortTarget(prevBoneRot[1], nextBoneRot[1])
+            nextBoneRot[2] = imports.angle.shortTarget(prevBoneRot[2], nextBoneRot[2])
+            nextBoneRot[3] = imports.angle.shortTarget(prevBoneRot[3], nextBoneRot[3])
             local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
             imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
             imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
