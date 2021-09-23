@@ -306,7 +306,7 @@ function playAnim()
     cinemationData.isPlayingAnim = {
         animCache = animCache,
         currentFrame = 1,
-        duration = 150,
+        duration = 1000,
         tickCounter = CLIENT_CURRENT_TICK
     }
 
@@ -337,7 +337,6 @@ imports.addEventHandler("onClientPedsProcessed", root, function()
             nextBoneRot[3] = imports.angle.shortTarget(prevBoneRot[3], nextBoneRot[3])
             local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
             imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
-            imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
         end
     end
     if cinemationData.isPlayingAnim.interpolationProgress >= 1 then
