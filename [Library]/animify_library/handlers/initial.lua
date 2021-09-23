@@ -29,5 +29,6 @@ imports.addEventHandler("onClientResourceStart", resource, function()
     createViewPortUI()
     createCoreUI()
     initCinemator()
+    fadeCamera(true, 0)
 
 end)
