@@ -306,7 +306,7 @@ function playAnim()
     cinemationData.isPlayingAnim = {
         animCache = animCache,
         currentFrame = 1,
-        duration = 1000,
+        duration = 250,
         tickCounter = CLIENT_CURRENT_TICK
     }
 
