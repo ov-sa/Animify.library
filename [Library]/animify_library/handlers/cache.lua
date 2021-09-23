@@ -17,7 +17,8 @@ local imports = {
     updateFrameView = updateFrameView,
     table = {
         insert = table.insert,
-        remove = table.remove
+        remove = table.remove,
+        clone = table.clone
     }
 }
 
@@ -65,13 +66,17 @@ end
 --[[ Functions: Adds/Removes Anim Frame ]]--
 --------------------------------------------
 
-function addAnimFrame(animIndex)
+function addAnimFrame(animIndex, frameIndex)
 
-    if not animIndex or not cache["Animations"][animIndex] then return false end
+    if not animIndex or not cache["Animations"][animIndex] or (frameIndex and not cache["Animations"][animIndex]["Frames"][frameIndex]) then return false end
 
-    imports.table.insert(cache["Animations"][animIndex]["Frames"], {
-        ["Bones"] = {}
-    })
+    if frameIndex then
+        imports.table.insert(cache["Animations"][animIndex]["Frames"], imports.table.clone(cache["Animations"][animIndex]["Frames"][frameIndex], true))
+    else
+        imports.table.insert(cache["Animations"][animIndex]["Frames"], {
+            ["Bones"] = {}
+        })
+    end
     return #cache["Animations"][animIndex]["Frames"]
 
 end

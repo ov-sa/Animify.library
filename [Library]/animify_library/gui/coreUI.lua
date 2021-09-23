@@ -84,6 +84,22 @@ coreUI = {
                         end
                     },
                     {
+                        title = "C L O N E  F R A M E",
+                        mandatorySelection = "view_frames",
+                        execFunction = function()
+                            local selectedAnim, selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement), beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                            if selectedAnim and selectedFrame then
+                                local frameIndex = addAnimFrame(selectedAnim, selectedFrame)
+                                if frameIndex then
+                                    local rowIndex = beautify.gridlist.addRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                                    beautify.gridlist.setRowData(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, rowIndex, 1, coreUI.viewerUI.gridlists.typeReference["view_frames"].prefix..frameIndex)
+                                end
+                            end
+                            destroyOptUI()
+                            imports.selectCoreOption(false)
+                        end
+                    },
+                    {
                         title = "C R E A T E  A N I M A T I O N",
                         execFunction = function()
                             local animIndex = createAnimCache()
