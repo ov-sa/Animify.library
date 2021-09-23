@@ -91,7 +91,11 @@ function createOptUI(options)
     optUI.createdElements["__UI_CACHE__"]["Wrapper"]["Title Bar"]["Text"].text = options.title or ""
     for i, j in imports.ipairs(options) do
         local createdButton = beautify.button.create(j.title, 0, 0, "default", optUI.width, optUI.height, nil, false)
-        if j.execFunction and imports.type(j.execFunction) == "function" then
+        if j.optBinds then
+            imports.addEventHandler("onClientUIClick", createdButton, function()
+                createOptUI(j.optBinds)
+            end)
+        elseif j.execFunction then
             imports.addEventHandler("onClientUIClick", createdButton, j.execFunction)
         end
         if i == 1 then

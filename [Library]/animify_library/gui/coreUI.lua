@@ -146,30 +146,56 @@ coreUI = {
                     {
                         title = "D E L E T E  F R A M E",
                         mandatorySelection = "view_frames",
-                        execFunction = function()
-                            local selectedAnim, selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement), beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
-                            if selectedAnim and selectedFrame then
-                                if removeAnimFrame(selectedAnim, selectedFrame) then
-                                    beautify.gridlist.removeRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, selectedFrame)
+                        optBinds = {
+                            title = "C  O  N  F  I  R  M  A  T  I  O  N",
+                            {
+                                title = "C O N F I R M",
+                                execFunction = function()
+                                    local selectedAnim, selectedFrame = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement), beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement)
+                                    if selectedAnim and selectedFrame then
+                                        if removeAnimFrame(selectedAnim, selectedFrame) then
+                                            beautify.gridlist.removeRow(coreUI.viewerUI.gridlists.typeReference["view_frames"].createdElement, selectedFrame)
+                                        end
+                                    end
+                                    destroyOptUI()
+                                    imports.selectCoreOption(false)
                                 end
-                            end
-                            destroyOptUI()
-                            imports.selectCoreOption(false)
-                        end
+                            },
+                            {
+                                title = "R E J E C T",
+                                execFunction = function()
+                                    destroyOptUI()
+                                    imports.selectCoreOption(false)
+                                end
+                            }
+                        }
                     },
                     {
                         title = "D E L E T E  A N I M A T I O N",
                         mandatorySelection = "view_animations",
-                        execFunction = function()
-                            local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
-                            if selectedAnim then
-                                if destroyAnimCache(selectedAnim) then
-                                    beautify.gridlist.removeRow(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, selectedAnim)
+                        optBinds = {
+                            title = "C  O  N  F  I  R  M  A  T  I  O  N",
+                            {
+                                title = "C O N F I R M",
+                                execFunction = function()
+                                    local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
+                                    if selectedAnim then
+                                        if destroyAnimCache(selectedAnim) then
+                                            beautify.gridlist.removeRow(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement, selectedAnim)
+                                        end
+                                    end
+                                    destroyOptUI()
+                                    imports.selectCoreOption(false)
                                 end
-                            end
-                            destroyOptUI()
-                            imports.selectCoreOption(false)
-                        end
+                            },
+                            {
+                                title = "R E J E C T",
+                                execFunction = function()
+                                    destroyOptUI()
+                                    imports.selectCoreOption(false)
+                                end
+                            }
+                        }
                     },
                     {
                         title = "C A N C E L",
