@@ -123,6 +123,7 @@ local function renderPedBones()
     if not cinemationData.frameData or cinemationData.isPlayingAnim then return false end
 
     for i, j in imports.pairs(cinemationData.frameData["Bones"]) do
+        --TODO: EXPECTATION: CONVERTS EULER TO QUAT TO CORRECT EULER ROT AND APPLIES ON BONE ROT
         local rot = ApplyElementBoneRotation(cinemationData.pedData.createdPed, i, j[1], j[2], j[3], false)
         --imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
         imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rot.z, rot.x, rot.y)
@@ -230,6 +231,7 @@ local function renderCinemator(renderData, cbArguments)
                         local boneReference = cinemationData.frameData["Bones"][(cinemationData.pedData.boneData.boneID)]
                         local isBoneAxisIndexModified = availablePedBones[(cinemationData.pedData.boneData.boneID)].axes[(cinemationData.pedData.boneData.axisID)]
                         local boneAxisID = (isBoneAxisIndexModified and cinemationData.axisRings[isBoneAxisIndexModified].axisIndex) or cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].axisIndex
+                        --TODO: STORES EULER ANGLES TO ROTATE ON SELECTED AXIS WHICH IS LATER CONVERTED TO QUAT
                         boneReference[boneAxisID] = (cinemationData.frameData["__EDITOR_CACHE__"][(cinemationData.pedData.boneData.boneID)][boneAxisID] + (((cinemationData.axisRings[(cinemationData.pedData.boneData.axisID)].rotationIndex == "x") and cursorRelX) or cursorRelY)*360)%360
                     end
                 end
@@ -294,58 +296,3 @@ function initCinemator()
     return true
 
 end
-
-
-
----TODO: EXPERIMENTAL: Press z to play---
-function playAnim()
-
-    local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
-    local animCache = getAnimCache(selectedAnim)
-    if not animCache or (#animCache["Frames"] <= 0) then return false end
-
-    cinemationData.pedData.boneData = false
-    cinemationData.isPlayingAnim = {
-        animCache = animCache,
-        currentFrame = 1,
-        duration = 250,
-        tickCounter = CLIENT_CURRENT_TICK
-    }
-
-end
-
-imports.addEventHandler("onClientPedsProcessed", root, function()
-
-    if not cinemationData.isPlayingAnim then return false end
-
-    local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)
-    local animCache = getAnimCache(selectedAnim)
-    if not animCache or (#animCache["Frames"] <= 0) then return false end
-
-    local currentFrameReference = animCache["Frames"][(cinemationData.isPlayingAnim.currentFrame)]
-    local nextFrameReference = animCache["Frames"][(cinemationData.isPlayingAnim.currentFrame + 1)]
-    if not currentFrameReference or not nextFrameReference then
-        cinemationData.isPlayingAnim = false
-        return false
-    end
-
-    cinemationData.isPlayingAnim.interpolationProgress = getInterpolationProgress(cinemationData.isPlayingAnim.tickCounter, cinemationData.isPlayingAnim.duration)
-    for i, j in pairs(availablePedBones) do
-        local currentDefaultRot = {imports.getElementBoneRotation(cinemationData.pedData.createdPed, i)}
-        local prevBoneRot, nextBoneRot = currentFrameReference["Bones"][i], nextFrameReference["Bones"][i]
-        if prevBoneRot and nextBoneRot then
-            nextBoneRot[1] = imports.angle.shortTarget(prevBoneRot[1], nextBoneRot[1])
-            nextBoneRot[2] = imports.angle.shortTarget(prevBoneRot[2], nextBoneRot[2])
-            nextBoneRot[3] = imports.angle.shortTarget(prevBoneRot[3], nextBoneRot[3])
-            local rotX, rotY, rotZ = interpolateBetween(prevBoneRot[1], prevBoneRot[2], prevBoneRot[3], nextBoneRot[1], nextBoneRot[2], nextBoneRot[3], cinemationData.isPlayingAnim.interpolationProgress, "Linear")
-            imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rotX, rotY, rotZ)
-        end
-    end
-    if cinemationData.isPlayingAnim.interpolationProgress >= 1 then
-        cinemationData.isPlayingAnim.currentFrame = cinemationData.isPlayingAnim.currentFrame + 1
-        cinemationData.isPlayingAnim.tickCounter = CLIENT_CURRENT_TICK
-    end
-    imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
-
-end)
-bindKey("z", "down", function() playAnim() end)
