@@ -124,7 +124,7 @@ local function renderPedBones()
 
     for i, j in imports.pairs(cinemationData.frameData["Bones"]) do
         --TODO: EXPECTATION: CONVERTS EULER TO QUAT TO CORRECT EULER ROT AND APPLIES ON BONE ROT
-        local rot = ApplyElementBoneRotation(cinemationData.pedData.createdPed, i, j[1], j[2], j[3], false)
+        local rot = ApplyElementBoneRotation(cinemationData.pedData.createdPed, i, j[1], j[2], j[3], true)
         --imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
         imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rot.z, rot.x, rot.y)
     end
