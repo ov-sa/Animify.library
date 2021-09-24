@@ -8,6 +8,7 @@
 
     <!-- Settings & Utilities -->
     <script src="utilities/client.lua" type="client" cache="false"/>
+    <script src="utilities/quat.lua" type="client" cache="false"/>
     <script src="settings/client.lua" type="client" cache="false"/>
 
     <!-- Configurations -->

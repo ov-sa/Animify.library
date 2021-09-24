@@ -96,8 +96,8 @@ local cinemationData = {
     },
     axisRings = {
         x = {
-            axisIndex = 1,
-            rotationIndex = "x",
+            axisIndex = 1, --TODO: USE FOR ROT DATA INDEX {0, 0, 0}
+            rotationIndex = "x", --TODO: USED ONLY FOR CURSOR MOVEMENT, DONT BOTHER THIS
             color = {255, 0, 0}
         },
         y = {
@@ -123,7 +123,9 @@ local function renderPedBones()
     if not cinemationData.frameData or cinemationData.isPlayingAnim then return false end
 
     for i, j in imports.pairs(cinemationData.frameData["Bones"]) do
-        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
+        local rot = ApplyElementBoneRotation(cinemationData.pedData.createdPed, i, j[1], j[2], j[3], false)
+        --imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, imports.unpack(j))
+        imports.setElementBoneRotation(cinemationData.pedData.createdPed, i, rot.z, rot.x, rot.y)
     end
     imports.updateElementRpHAnim(cinemationData.pedData.createdPed)
 
@@ -295,7 +297,7 @@ end
 
 
 
----TODO: EXPERIMENTAL---
+---TODO: EXPERIMENTAL: Press z to play---
 function playAnim()
 
     local selectedAnim = beautify.gridlist.getSelection(coreUI.viewerUI.gridlists.typeReference["view_animations"].createdElement)

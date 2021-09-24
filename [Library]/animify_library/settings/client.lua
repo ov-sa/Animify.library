@@ -82,7 +82,9 @@ availablePedBones = {
     },
     [32] = {
         name = "Left Shoulder",
-        axes = {x = "y", y = "x"}
+        --TODO: FOR SWAPPING AXIS FOR BONES
+        axes = {}
+        --axes = {x = "y", y = "x"}
     },
     [33] = {
         name = "Left Elbow",
